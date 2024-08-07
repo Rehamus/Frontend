@@ -38,7 +38,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         if (loading) return;
         setLoading(true);
         try {
-            const response = await axiosInstance.get(`/api/card${type}`, {
+            const response = await axiosInstance.get(`/api/contents${type}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                 params: { offset, pagesize: pageSize, genre: subGenre || '', tab }
             });

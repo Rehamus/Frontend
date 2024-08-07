@@ -10,7 +10,7 @@ const LikeBookmarkButtons = ({postId}) => {
         const fetchLikeStatus = async () => {
             try {
                 const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
-                const response = await axiosInstance.get(`/api/like/${postId}/likesContent`, {headers});
+                const response = await axiosInstance.get(`/api/contents/like/${postId}`, {headers});
                 setLiked(response.data);
             } catch (error) {
                 console.error('좋아요 상태를 불러오는 중 에러 발생:', error);
@@ -20,8 +20,7 @@ const LikeBookmarkButtons = ({postId}) => {
         const fetchBookmarkStatus = async () => {
             try {
                 const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
-                const userId = localStorage.getItem('userId');
-                const response = await axiosInstance.get(`/api/bookmarks/${postId}/status`, {headers, params: {userId}});
+                const response = await axiosInstance.get(`/api/bookmarks/${postId}/status`, {headers});
                 setBookmarked(response.data);
             } catch (error) {
                 console.error('북마크 상태를 불러오는 중 에러 발생:', error);
@@ -36,9 +35,9 @@ const LikeBookmarkButtons = ({postId}) => {
         try {
             const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
             if (liked) {
-                await axiosInstance.delete(`/api/like/${postId}/likesContent`, {headers});
+                await axiosInstance.delete(`/api/contents/like/${postId}`, {headers});
             } else {
-                await axiosInstance.post(`/api/like/${postId}/likesContent`, {}, {headers});
+                await axiosInstance.post(`/api/contents/like/${postId}`, {}, {headers});
             }
             setLiked(!liked);
         } catch (error) {

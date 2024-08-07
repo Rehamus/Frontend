@@ -6,17 +6,25 @@ const AuthCallback = ({ onLogin }) => {
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const accessToken = params.get('Authorization');
+        const authorizationParam = params.get('Authorization');
 
-        if (accessToken) {
-            localStorage.setItem('Authorization', accessToken);
-            onLogin();
-            navigate('/');
+        if (authorizationParam) {
+            const [accessToken, refreshToken] = authorizationParam.split('VAV');
+
+            if (accessToken && refreshToken) {
+                localStorage.setItem('Authorization', accessToken);
+                localStorage.setItem('RefreshToken', refreshToken);
+                onLogin();
+                navigate('/');
+            } else {
+                console.error('토큰이 올바르지 않습니다.');
+                navigate('/login');
+            }
         } else {
             console.error('토큰이 없습니다.');
-            navigate('/');
+            navigate('/login');
         }
-    }, [navigate]);
+    }, [navigate, onLogin]);
 
     return <div>로그인 처리 중...</div>;
 };

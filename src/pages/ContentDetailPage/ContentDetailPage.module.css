@@ -213,3 +213,44 @@
     background-color: #0f3d89;
     color: #ffefef;
 }
+
+.tag_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag_button {
+    padding: 0.08rem .4rem;
+    background-color: #f0f2f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tag_button:hover {
+    background-color: #e8eaed;
+}
+
+.tag_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag_button {
+    padding: 0.1rem .8rem;
+    background-color: #f0f2f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tag_button:hover {
+    background-color: #e8eaed;
+}
+

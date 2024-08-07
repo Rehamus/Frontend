@@ -14,11 +14,11 @@ const CommentSection = ({ postId, isLoggedIn }) => {
 
     const fetchComments = async () => {
         try {
-            const response = await axiosInstance.get(`/api/${postId}/comments`);
+            const response = await axiosInstance.get(`/api/post/${postId}/comments`);
             const commentsData = await Promise.all(response.data.map(async (comment) => {
                 let likeResponse = { data: false };
                 if (isLoggedIn) {
-                    likeResponse = await axiosInstance.get(`/api/like/${comment.id}/likes`, {
+                    likeResponse = await axiosInstance.get(`/api/post/${postId}/comments/${comment.id}/like`, {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                     });
                 }
@@ -26,7 +26,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
                 const children = await Promise.all((comment.children || []).map(async (child) => {
                     let childLikeResponse = { data: false };
                     if (isLoggedIn) {
-                        childLikeResponse = await axiosInstance.get(`/api/like/${child.id}/likes`, {
+                        childLikeResponse = await axiosInstance.get(`/api/post/${postId}/comments/${child.id}/like`, {
                             headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                         });
                     }
@@ -60,7 +60,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axiosInstance.post(`/api/${postId}/comments`, {
+            await axiosInstance.post(`/api/post/${postId}/comments`, {
                 contents: commentContent,
                 parentId: null
             }, {
@@ -76,7 +76,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
     const handleReplySubmit = async (e, commentId, parentCommentId = null) => {
         e.preventDefault();
         try {
-            await axiosInstance.post(`/api/${postId}/comments`, {
+            await axiosInstance.post(`/api/post/${postId}/comments`, {
                 contents: replyContents[commentId] || '',
                 parentId: commentId
             }, {
@@ -114,7 +114,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
     const handleEditSubmit = async (e, commentId) => {
         e.preventDefault();
         try {
-            await axiosInstance.put(`/api/${postId}/comments/${commentId}`, {
+            await axiosInstance.put(`/api/post/${postId}/comments/${commentId}`, {
                 contents: editingContent
             }, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
@@ -129,7 +129,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
 
     const handleDeleteClick = async (commentId) => {
         try {
-            await axiosInstance.delete(`/api/${postId}/comments/${commentId}`, {
+            await axiosInstance.delete(`/api/post/${postId}/comments/${commentId}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
             fetchComments();
@@ -141,11 +141,11 @@ const CommentSection = ({ postId, isLoggedIn }) => {
     const handleLike = async (commentId, liked) => {
         try {
             if (liked) {
-                await axiosInstance.delete(`/api/like/${commentId}/likes`, {
+                await axiosInstance.delete(`/api/post/${postId}/comments/${commentId}/like`, {
                     headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
             } else {
-                await axiosInstance.post(`/api/like/${commentId}/likes`, {}, {
+                await axiosInstance.post(`/api/post/${postId}/comments/${commentId}/like`, {}, {
                     headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
             }

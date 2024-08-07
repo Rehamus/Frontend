@@ -34,7 +34,7 @@ const MyPage = ({ setIsLoggedIn }) => {
 
             const fetchWebtoonsData = async () => {
                 try {
-                    const response = await axiosInstance.get(`/api/card/webtoon/bookmark`, {
+                    const response = await axiosInstance.get(`/api/contents/webtoon/bookmark`, {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { offset, pageSize }
                     });
@@ -47,7 +47,7 @@ const MyPage = ({ setIsLoggedIn }) => {
 
             const fetchWebnovelsData = async () => {
                 try {
-                    const response = await axiosInstance.get(`/api/card/webnovel/bookmark`, {
+                    const response = await axiosInstance.get(`/api/contents/webnovel/bookmark`, {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { offset, pageSize }
                     });
@@ -62,7 +62,7 @@ const MyPage = ({ setIsLoggedIn }) => {
                 try {
                     const response = await axiosInstance.get('/api/hashtag/recommend', {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                        params: { offset: 8 } // offset을 8로 설정합니다.
+                        params: { offset: 8 }
                     });
                     return response.data;
                 } catch (error) {

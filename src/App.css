@@ -14,3 +14,7 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
 }
+
+.content-page{
+  min-height: 1750px;
+}

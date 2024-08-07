@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import CommentSection from '../../tool/CommentSection/CommentSection';
-import PostList from '../../tool/PostList/PostList'; // PostList 임포트
+import PostList from '../../tool/PostList/PostList';
 import './PostDetailPage.css';
-import styles from "../ContentDetailPage/ContentDetailPage.module.css";
+import styles from '../ContentDetailPage/ContentDetailPage.module.css';
 
 const platformColors = {
     '리디': '#03beea',
@@ -13,8 +13,8 @@ const platformColors = {
     '네이버': '#00C73C'
 };
 
-const PostDetailPage = ({isLoggedIn}) => {
-    const {boardId, postId} = useParams();
+const PostDetailPage = ({ isLoggedIn }) => {
+    const { boardId, postId } = useParams();
     const [post, setPost] = useState(null);
     const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -23,10 +23,10 @@ const PostDetailPage = ({isLoggedIn}) => {
     const [editedTitle, setEditedTitle] = useState('');
     const [editedContent, setEditedContent] = useState('');
     const [contentId, setContentId] = useState(null);
-    const [relatedPosts, setRelatedPosts] = useState([]); // 관련 포스트 상태 추가
+    const [relatedPosts, setRelatedPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const userId = localStorage.getItem('userId'); // 로그인된 사용자의 ID를 가져옴
+    const userId = localStorage.getItem('userId');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -52,7 +52,7 @@ const PostDetailPage = ({isLoggedIn}) => {
         const fetchLikeStatus = async () => {
             try {
                 const response = await axiosInstance.get(`/api/like/${postId}/likesPost`, {
-                    headers: {Authorization: `${localStorage.getItem('Authorization')}`}
+                    headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
                 setLiked(response.data);
             } catch (error) {
@@ -69,11 +69,10 @@ const PostDetailPage = ({isLoggedIn}) => {
         const fetchContentDetail = async () => {
             if (contentId) {
                 try {
-                    const response = await axiosInstance.get(`/api/card/${contentId}`);
+                    const response = await axiosInstance.get(`/api/contents/${contentId}`);
                     setContent(response.data);
-                    console.log(response);
 
-                    await axiosInstance.post(`/card/${contentId}/viewcount`);
+                    await axiosInstance.post(`/api/contents/viewcount/${contentId}`);
                 } catch (error) {
                     console.error('Error fetching content detail:', error);
                 }
@@ -87,7 +86,7 @@ const PostDetailPage = ({isLoggedIn}) => {
         const fetchRelatedPosts = async () => {
             try {
                 const response = await axiosInstance.get(`/api/boards/${boardId}`, {
-                    params: {offset: (currentPage - 1) * 5, pagesize: 5}
+                    params: { offset: (currentPage - 1) * 5, pagesize: 5 }
                 });
                 setRelatedPosts(response.data.posts);
                 setTotalPages(response.data.totalPages);
@@ -100,12 +99,12 @@ const PostDetailPage = ({isLoggedIn}) => {
     }, [boardId, currentPage]);
 
     const handleLikeButtonClick = async () => {
-        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
+        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
         try {
             if (liked) {
-                await axiosInstance.delete(`/api/like/${postId}/likesPost`, {headers});
+                await axiosInstance.delete(`/api/like/${postId}/likesPost`, { headers });
             } else {
-                await axiosInstance.post(`/api/like/${postId}/likesPost`, {}, {headers});
+                await axiosInstance.post(`/api/like/${postId}/likesPost`, {}, { headers });
             }
             setLiked(!liked);
         } catch (error) {
@@ -114,9 +113,9 @@ const PostDetailPage = ({isLoggedIn}) => {
     };
 
     const handleDelete = async () => {
-        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
+        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
         try {
-            await axiosInstance.delete(`/api/boards/deletePost/${boardId}/post/${postId}`, {headers});
+            await axiosInstance.delete(`/api/boards/deletePost/${boardId}/post/${postId}`, { headers });
             navigate(`/community/board/${boardId}`);
         } catch (error) {
             console.error("There was an error deleting the post!", error);
@@ -133,13 +132,13 @@ const PostDetailPage = ({isLoggedIn}) => {
             return;
         }
 
-        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
+        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
         try {
             await axiosInstance.put(`/api/boards/${boardId}/post/${postId}`, {
                 title: editedTitle,
                 body: editedContent
-            }, {headers});
-            setPost({...post, title: editedTitle, body: editedContent});
+            }, { headers });
+            setPost({ ...post, title: editedTitle, body: editedContent });
             setEditMode(false);
         } catch (error) {
             console.error("There was an error saving the post!", error);
@@ -167,10 +166,10 @@ const PostDetailPage = ({isLoggedIn}) => {
             </div>
             <div className={`post-detail-container ${post.postType === "REVIEW" ? "review" : ""}`}>
                 {post.postType === "REVIEW" && content && (
-                    <div className={styles.post_img} style={{backgroundImage: `url(${content.imgUrl})`}}>
+                    <div className={styles.post_img} style={{ backgroundImage: `url(${content.imgUrl})` }}>
                         <div
                             className={styles.post_platform}
-                            style={{backgroundColor: platformColor}}
+                            style={{ backgroundColor: platformColor }}
                         >
                             {content.platform}
                         </div>
@@ -193,6 +192,11 @@ const PostDetailPage = ({isLoggedIn}) => {
                                         </div>
                                     </a>
                                 </div>
+                            </div>
+                            <div className={styles.tag_container}>
+                                {content.hashtags.map(tag => (
+                                    <button key={tag} className={styles.tag_button}>{tag}</button>
+                                ))}
                             </div>
                             <p className={styles.contentDetailMeta}>작가: {content.author} </p>
                             <div className={styles.postDetailContent}>

@@ -26,6 +26,7 @@ import NewPostPage from './pages/NewPostPage/NewPostPage';
 import NewPostReviewPage from './pages/NewPostPage/NewPostReviewPage';
 import BoardPage from "./pages/BordsPage/BoardPage";
 
+import AdminLoginPage from "./AdminPages/AdminLogin/AdminLoginPage";
 import './App.css';
 
 const App = () => {
@@ -47,20 +48,6 @@ const App = () => {
             });
         }
     }, []);
-
-    const fetchData = async () => {
-        try {
-            const profileResponse = await axiosInstance.get('/api/user', {
-                headers: { Authorization: `${localStorage.getItem('Authorization')}` }
-            });
-            setProfile(profileResponse.data);
-            localStorage.setItem('userId', profileResponse.data.id);
-            console.log(profileResponse);
-
-        } catch (error) {
-            console.error('데이터 불러오기 실패:', error);
-        }
-    };
 
     const fetchUserHashtags = async () => {
         try {
@@ -94,7 +81,6 @@ const App = () => {
 
     const handleLogin = () => {
         setIsLoggedIn(true);
-        fetchData();
         fetchUserHashtags();
     };
 
@@ -142,6 +128,13 @@ const App = () => {
                     <Route path="/community/board/:boardId/post/:postId" element={<PostDetailPage isLoggedIn={isLoggedIn} />} />
                     <Route path="/review/:contentId/new" element={<NewPostReviewPage />} />
                     <Route path="/community/board/:boardId/post/new" element={<NewPostPage />} />
+
+                    {/*어드민*/}
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
+
+
+
+
                 </Routes>
                 {showTagsModal && <UserHashtag onSubmit={handleTagsSubmit} onClose={() => setShowTagsModal(false)} />}
             </div>

@@ -23,8 +23,6 @@ const UserHashtag = ({ onSubmit, onClose }) => {
             setTimeout(() => {
                 const storedTags = localStorage.getItem('tags');
                 const genresArray = storedTags ? storedTags.split('#').filter(tag => tag !== "") : [];
-                console.log("Stored Tags:", storedTags);
-                console.log("Genres Array:", genresArray);
                 setGenres(genresArray);
             }, 400); // 0.4초 딜레이
         };
@@ -55,7 +53,6 @@ const UserHashtag = ({ onSubmit, onClose }) => {
     const handleSubmit = () => {
         const selectedGenresString = selectedGenres.join('#');
         onSubmit("#" + selectedGenresString);
-        console.log("#" + selectedGenresString);
         onClose();
     };
 

@@ -21,7 +21,7 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
         if (loading) return;
         setLoading(true);
         try {
-            const response = await axiosInstance.get(`/api/card${type}/top`, {
+            const response = await axiosInstance.get(`/api/contents${type}/top`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                 params: { pagesize: 10, genre: '', tab }
             });
@@ -43,7 +43,7 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
             <Swiper
                 modules={[Navigation]}
                 spaceBetween={10}
-                slidesPerView={3}
+                slidesPerView={4.2}
                 navigation
                 loop={true}
                 breakpoints={{
