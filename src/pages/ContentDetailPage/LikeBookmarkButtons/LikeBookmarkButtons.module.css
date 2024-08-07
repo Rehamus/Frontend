@@ -1,0 +1,25 @@
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.likeButton, .bookmarkButton {
+    background-color: #4285f4;
+    border: 1px solid #ccc;
+    color: #fff;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.liked, .bookmarked {
+    background-color: #d51010;
+}
+
+.likeButton:hover, .bookmarkButton:hover {
+    background-color: #2f6acb;
+}

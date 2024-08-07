@@ -1,0 +1,50 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@react-spring/web": "^9.7.4",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@use-gesture/react": "^10.3.1",
+    "axios": "^1.7.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.25.1",
+    "react-script": "^2.0.5",
+    "react-scripts": "5.0.1",
+    "react-slick": "^0.30.2",
+    "react-swipeable": "^7.0.1",
+    "slick-carousel": "^1.8.1",
+    "swiper": "^11.1.9",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start:mac": "HTTPS=true SSL_CRT_FILE=cert/eleven_book.pem SSL_KEY_FILE=cert/eleven_book-key.pem npm run start",
+    "start:windows": "set HTTPS=true&&set SSL_CRT_FILE=cert/eleven_book.pem&&set SSL_KEY_FILE=cert/eleven_book-key.pem&&npm run start"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

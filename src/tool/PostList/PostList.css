@@ -1,0 +1,44 @@
+.post_postType{
+    margin: 0 .2rem 0 0;
+    width: 5.5rem;
+    padding: 0.2rem 0;
+    text-align: center;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.post_postType.NORMAL {
+    background-color: #4285f4;
+}
+
+.post_postType.REVIEW {
+    background-color: #ee3131;
+}
+
+.current-post {
+    background-color: #2d2d2d !important;
+    font-weight: bold;
+}
+
+.current-post * {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+.current-post .post_postType{
+    background-color: #e24949 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+.current-post .post_postType.NORMAL{
+    background-color: #4756f6 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+}
