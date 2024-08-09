@@ -49,14 +49,16 @@ const AdminMainPage = ({ onAdminLogin }) => {
                     <h2>크롤링 관리</h2>
                     <div className={styles['crawling-btn-container']}>
                         <button onClick={() => handleCrawlingAction('/start/all')}
-                                className={styles['crawling-btn']}>전체 크롤링 시작</button>
+                                className={styles['crawling-btn']}>전체 크롤링 시작
+                        </button>
                         <button onClick={() => handleCrawlingAction('/local')}
-                                className={styles['crawling-btn']}>로컬 파일로 저장</button>
+                                className={styles['crawling-btn']}>로컬 파일로 저장
+                        </button>
                         <button onClick={() => handleCrawlingAction('/local/update')}
-                                className={styles['crawling-btn']}>로컬 파일로 DB 업데이트</button>
+                                className={styles['crawling-btn']}>로컬 파일로 DB 업데이트
+                        </button>
                     </div>
-                </div>
-                <div className={styles['login-form']}>
+                    <br/>
                     <h2>관리</h2>
                     <div className={styles['management-btn-container']}>
                         <button onClick={() => navigate('/admin/user')}
@@ -76,7 +78,25 @@ const AdminMainPage = ({ onAdminLogin }) => {
                         </button>
                     </div>
                 </div>
+                <div className={styles['login-form']}>
+
+                </div>
+                <div className={styles['login-form']}>
+                    <h2>공지사항 관리</h2>
+                    <div className={styles['crawling-btn-container']}>
+                        <button
+                                className={styles['crawling-btn']}> 공지 쓰기
+                        </button>
+                        <button
+                                className={styles['crawling-btn']}> 공지 쓰기
+                        </button>
+                        <button
+                                className={styles['crawling-btn']}> 공지 쓰기
+                        </button>
+                    </div>
+                </div>
             </div>
+
             <footer className={styles.footer}>
                 <p>&copy; 2023 11조 프로젝트. All rights reserved.</p>
             </footer>

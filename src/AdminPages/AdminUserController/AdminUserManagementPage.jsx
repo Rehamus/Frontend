@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import styles from './AdminUserManagementPage.module.css';
 
@@ -7,8 +8,9 @@ const AdminUserManagementPage = () => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
     const [size] = useState(10); // 페이지 크기
-    const [sortBy] = useState('createdAt');
-    const [asc] = useState(true);
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [asc, setAsc] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -20,16 +22,16 @@ const AdminUserManagementPage = () => {
                 const data = response.data;
                 if (Array.isArray(data)) {
                     setUsers(data);
-                } else if (data && data.content) { // 예를 들어, 데이터가 객체 안에 content 필드로 포함된 경우
+                } else if (data && data.content) {
                     setUsers(data.content);
                 } else {
                     console.error('Unexpected response format:', data);
-                    setUsers([]); // 예상치 못한 형식인 경우 빈 배열로 설정
+                    setUsers([]);
                 }
                 setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch users:', error);
-                setUsers([]); // 에러 발생 시 빈 배열로 설정
+                setUsers([]);
                 setLoading(false);
             }
         };
@@ -52,6 +54,26 @@ const AdminUserManagementPage = () => {
         }
     };
 
+    const handleSort = (newSortBy) => {
+        if (sortBy === newSortBy) {
+            setAsc(!asc); // 동일한 열 클릭 시 정렬 순서 변경
+        } else {
+            setSortBy(newSortBy);
+            setAsc(true); // 다른 열을 클릭 시 오름차순으로 시작
+        }
+    };
+
+    const getSortIndicator = (column) => {
+        if (sortBy === column) {
+            return asc ? ' ▲' : ' ▼';  // 오름차순은 ▲, 내림차순은 ▼
+        }
+        return '';
+    };
+
+    const handleRowClick = (userId) => {
+        navigate(`/user/${userId}`);
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -62,17 +84,27 @@ const AdminUserManagementPage = () => {
             <table className={styles.table}>
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>닉네임</th>
-                    <th>이메일</th>
+                    <th onClick={() => handleSort('id')}>
+                        ID{getSortIndicator('id')}
+                    </th>
+                    <th onClick={() => handleSort('nickname')}>
+                        닉네임{getSortIndicator('nickname')}
+                    </th>
+                    <th onClick={() => handleSort('email')}>
+                        이메일{getSortIndicator('email')}
+                    </th>
                     <th>상태</th>
-                    <th>권한</th>
-                    <th>가입일자</th>
+                    <th onClick={() => handleSort('role')}>
+                        권한{getSortIndicator('role')}
+                    </th>
+                    <th onClick={() => handleSort('createdAt')}>
+                        가입일자{getSortIndicator('createdAt')}
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
                 {Array.isArray(users) && users.map((user) => (
-                    <tr key={user.id}>
+                    <tr key={user.id} onClick={() => handleRowClick(user.id)} className={styles.row}>
                         <td>{user.id}</td>
                         <td>{user.nickname}</td>
                         <td>{user.email}</td>
@@ -80,6 +112,7 @@ const AdminUserManagementPage = () => {
                             <select
                                 value={user.status}
                                 onChange={(e) => handleStatusChange(user.id, e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
                                 className={styles.statusSelect}
                             >
                                 <option value="NORMAL">NORMAL</option>

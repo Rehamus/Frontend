@@ -37,6 +37,7 @@ import './App.css';
 import AdminPostManagementPage from "./AdminPages/AdminPostController/AdminPostManagementPage";
 import AdminHashtagManagementPage from "./AdminPages/AdminHashtag/AdminHashtagManagementPage";
 import AdminRoute from "./api/AdminRoute";
+import AdminContentManagementPage from "./AdminPages/AdminContentsController/AdminContentManagementPage";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -166,6 +167,7 @@ const App = () => {
                 <Route path="/admin/user" element={<AdminRoute><AdminUserManagementPage/></AdminRoute>}/>
                 <Route path="/admin/post" element={<AdminRoute><AdminPostManagementPage/></AdminRoute>}/>
                 <Route path="/admin/hashtag" element={<AdminRoute><AdminHashtagManagementPage/></AdminRoute>}/>
+                <Route path="/admin/content" element={<AdminRoute><AdminContentManagementPage/></AdminRoute>}/>
             </Routes>
             {showTagsModal && <UserHashtag onSubmit={handleTagsSubmit} onClose={() => setShowTagsModal(false)}/>}
         </div>

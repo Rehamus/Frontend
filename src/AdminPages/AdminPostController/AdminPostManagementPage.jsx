@@ -12,6 +12,13 @@ const AdminPostManagementPage = () => {
     const [asc, setAsc] = useState(true);
     const navigate = useNavigate();
 
+    // 페이지가 처음 로드될 때 상태를 초기화
+    useEffect(() => {
+        setPage(0);
+        setSortBy('createdAt');
+        setAsc(true);
+    }, []);
+
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -37,7 +44,7 @@ const AdminPostManagementPage = () => {
         };
 
         fetchPosts();
-    }, [page, size, sortBy, asc]);
+    }, [page, sortBy, asc]); // 의존성 배열에 page, sortBy, asc 포함
 
     const handleSort = (newSortBy) => {
         if (sortBy === newSortBy) {
@@ -46,6 +53,13 @@ const AdminPostManagementPage = () => {
             setSortBy(newSortBy);
             setAsc(true);
         }
+    };
+
+    const getSortIndicator = (column) => {
+        if (sortBy === column) {
+            return asc ? ' ▲' : ' ▼';  // 오름차순은 ▲, 내림차순은 ▼
+        }
+        return '';
     };
 
     const handleDelete = async (postId) => {
@@ -78,22 +92,76 @@ const AdminPostManagementPage = () => {
             <table className={styles.table}>
                 <thead>
                 <tr>
-                    <th onClick={() => handleSort('id')}>ID</th>
-                    <th onClick={() => handleSort('userId')}>User ID</th>
-                    <th onClick={() => handleSort('postType')}>Post Type</th>
-                    <th onClick={() => handleSort('title')}>Title</th>
-                    <th onClick={() => handleSort('body')}>Body</th>
-                    <th onClick={() => handleSort('nickname')}>Nickname</th>
-                    <th onClick={() => handleSort('boardId')}>Board ID</th>
-                    <th onClick={() => handleSort('contentId')}>Content ID</th>
-                    <th onClick={() => handleSort('createdAt')}>Created At</th>
-                    <th onClick={() => handleSort('viewCount')}>View Count</th>
+                    <th
+                        onClick={() => handleSort('id')}
+                        className={sortBy === 'id' ? styles.selectedHeader : ''}
+                    >
+                        ID{getSortIndicator('id')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('userId')}
+                        className={sortBy === 'userId' ? styles.selectedHeader : ''}
+                    >
+                        User ID{getSortIndicator('userId')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('postType')}
+                        className={sortBy === 'postType' ? styles.selectedHeader : ''}
+                    >
+                        Post Type{getSortIndicator('postType')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('title')}
+                        className={sortBy === 'title' ? styles.selectedHeader : ''}
+                    >
+                        Title{getSortIndicator('title')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('body')}
+                        className={sortBy === 'body' ? styles.selectedHeader : ''}
+                    >
+                        Body{getSortIndicator('body')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('nickname')}
+                        className={sortBy === 'nickname' ? styles.selectedHeader : ''}
+                    >
+                        Nickname{getSortIndicator('nickname')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('boardId')}
+                        className={sortBy === 'boardId' ? styles.selectedHeader : ''}
+                    >
+                        Board ID{getSortIndicator('boardId')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('contentId')}
+                        className={sortBy === 'contentId' ? styles.selectedHeader : ''}
+                    >
+                        Content ID{getSortIndicator('contentId')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('createdAt')}
+                        className={sortBy === 'createdAt' ? styles.selectedHeader : ''}
+                    >
+                        Created At{getSortIndicator('createdAt')}
+                    </th>
+                    <th
+                        onClick={() => handleSort('viewCount')}
+                        className={sortBy === 'viewCount' ? styles.selectedHeader : ''}
+                    >
+                        View Count{getSortIndicator('viewCount')}
+                    </th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {Array.isArray(posts) && posts.map((post) => (
-                    <tr key={post.id} className={styles[`postType-${post.postType}`]} onClick={() => handleRowClick(post.boardId, post.id)}>
+                    <tr
+                        key={post.id}
+                        className={`${styles[`postType-${post.postType}`]} ${styles.row}`}
+                        onClick={() => handleRowClick(post.boardId, post.id)}
+                    >
                         <td>{post.id}</td>
                         <td>{post.userId}</td>
                         <td>{post.postType}</td>
@@ -105,7 +173,12 @@ const AdminPostManagementPage = () => {
                         <td>{new Date(post.createdAt).toLocaleString()}</td>
                         <td>{post.viewCount}</td>
                         <td>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(post.id); }} className={styles.deleteButton}>삭제</button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleDelete(post.id); }}
+                                className={styles.deleteButton}
+                            >
+                                삭제
+                            </button>
                         </td>
                     </tr>
                 ))}
