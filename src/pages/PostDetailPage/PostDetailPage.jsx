@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import CommentSection from '../../tool/CommentSection/CommentSection';
 import PostList from '../../tool/PostList/PostList';
@@ -225,7 +225,9 @@ const PostDetailPage = ({ isLoggedIn }) => {
                                 <h2 className="post-detail-title">{post.title}</h2>
                             )}
                         </div>
-                        <p className="post-detail-meta">작성자: {post.nickname} | {post.createdAt}</p>
+                        <p className="post-detail-meta"> <Link to={`/user/${post.userId}`}>작성자: {post.nickname}</Link> | {post.createdAt}
+
+                        </p>
                         <div className="post-detail-content">
                             {editMode ? (
                                 <textarea

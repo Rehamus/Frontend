@@ -59,13 +59,7 @@ const UserHashtag = ({ onSubmit, onClose }) => {
     return (
         <div className={styles.modal}>
             <div className={styles.modalContent}>
-                <h1 style={{
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                    padding: '10px',
-                    backgroundColor: 'white',
-                    borderRadius: '5px',
-                    textAlign: 'center'
-                }}>선호하는 태그를 선택해 주세요</h1>
+                <h1 className={styles.modalHeader}>선호하는 태그를 선택해 주세요</h1>
                 <div className={styles.genreList}>
                     {genres.map((genre) => (
                         <button

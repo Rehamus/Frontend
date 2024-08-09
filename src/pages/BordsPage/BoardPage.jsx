@@ -4,7 +4,7 @@ import axiosInstance from '../../api/axiosInstance';
 import PostList from '../../tool/PostList/PostList';
 import './BoardPage.css';
 
-const BoardPage = () => {
+const BoardPage = ({ isLoggedIn }) => { // isLoggedIn 상태를 props로 받습니다.
     const [posts, setPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [boardTitle, setBoardTitle] = useState('');
@@ -49,7 +49,9 @@ const BoardPage = () => {
         <div className="container">
             <div className="community-header">
                 <a href={`/community`}><h1>{boardTitle}</h1></a>
-                <a href={`/community/board/${boardId}/post/new`} className="button">새 글 작성</a>
+                {isLoggedIn && ( // 로그인 상태에 따라 버튼을 조건부 렌더링합니다.
+                    <a href={`/community/board/${boardId}/post/new`} className="button">새 글 작성</a>
+                )}
             </div>
 
             <PostList

@@ -12,6 +12,10 @@
     cursor: pointer;
 }
 
+.post_postType.CONTENT {
+    background-color: #50f62b;
+}
+
 .post_postType.NORMAL {
     background-color: #4285f4;
 }

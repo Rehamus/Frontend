@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import './CommentSection.css';
+import {Link} from "react-router-dom";
 
 const CommentSection = ({ postId, isLoggedIn }) => {
     const [comments, setComments] = useState([]);
@@ -160,7 +161,9 @@ const CommentSection = ({ postId, isLoggedIn }) => {
             const isCurrentUser = comment.userId === parseInt(currentUserId, 10);
             return (
                 <div className={`comment ${isCurrentUser ? 'current-user' : ''}`} key={comment.id}>
-                    <p className="comment-username">{comment.nickname}</p>
+                    <p className="comment-username">
+                        <Link to={`/user/${comment.userId}`}>{comment.nickname}</Link>
+                    </p>
                     {editingCommentId === comment.id ? (
                         <form className="update_comment" onSubmit={(e) => handleEditSubmit(e, comment.id)}>
                             <textarea

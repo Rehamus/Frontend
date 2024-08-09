@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Pagination from '../../tool/Pagination/Pagination';
 import './PostList.css';
+import {Link} from "react-router-dom";
 
 const PostList = ({ posts, currentPostId, currentPage, totalPages, onPageClick }) => {
     const formatDateTime = (dateTime) => {
@@ -31,7 +32,7 @@ const PostList = ({ posts, currentPostId, currentPage, totalPages, onPageClick }
                             <p className={`post_postType ${post.postType}`}>{post.postType}</p> {post.title}
                         </div>
                         <span className="board-meta">
-                            {post.nickname} | {formatDateTime(post.createdAt)} | 조회 {post.viewCount}
+                             <Link to={`/user/${post.userId}`}>{post.nickname}</Link> | {formatDateTime(post.createdAt)} | 조회 {post.viewCount}
                         </span>
                     </a>
                 ))}

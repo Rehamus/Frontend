@@ -1,3 +1,5 @@
+/* UserHashtag.module.css */
+
 .modal {
     display: flex;
     justify-content: center;
@@ -21,7 +23,18 @@
     height: 85%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.modalHeader {
+    box-shadow: 0 14px 8px rgba(0, 0, 0, 0.1);
+    padding: 0 10px 10px;
+    background-color: white;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-top: 0;
 }
 
 .genreList {
@@ -30,6 +43,8 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .genreItem {
@@ -56,7 +71,7 @@
 }
 
 .button {
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -65,6 +80,11 @@
     color: white;
     font-size: 16px;
     transition: background-color 0.3s, color 0.3s;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(40% - 40px);
 }
 
 .button:hover {

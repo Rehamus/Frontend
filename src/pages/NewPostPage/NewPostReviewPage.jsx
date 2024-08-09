@@ -20,8 +20,6 @@ const NewPostReviewPage = () => {
             setTimeout(() => {
                 const storedTags = localStorage.getItem('tags');
                 const genresArray = storedTags ? storedTags.split('#').filter(tag => tag !== "") : [];
-                console.log("Stored Tags:", storedTags);
-                console.log("Genres Array:", genresArray);
                 setGenres(genresArray);
             }, 400); // 0.4초 딜레이
         };

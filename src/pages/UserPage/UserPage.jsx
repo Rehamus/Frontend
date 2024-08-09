@@ -10,7 +10,7 @@ import EditProfileModal from './EditProfileModal';
 
 Modal.setAppElement('#root');
 
-const MyPage = ({ setIsLoggedIn , onLogout }) => {
+const UserPage = ({ setIsLoggedIn }) => {
     const [profile, setProfile] = useState(null);
     const [bookmarkedWebtoons, setBookmarkedWebtoons] = useState([]);
     const [bookmarkedWebnovels, setBookmarkedWebnovels] = useState([]);
@@ -75,6 +75,7 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
             const webnovelsData = await fetchWebnovelsData();
             const recommendedPosts = await fetchRecommendedPosts();
 
+
             const postsResponse = await axiosInstance.get(`/api/boards/user/posts`, {
                 params: { offset, pageSize },
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
@@ -101,7 +102,7 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
     const handleEditProfile = async () => {
         if (window.confirm('정말로 수정하시겠습니까?')) {
             try {
-                await axiosInstance.put('/api/user/edit', null, {
+                await axiosInstance.put('/user/edit', null, {
                     params: { username: newUsername },
                     headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
@@ -119,13 +120,14 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
     const handleDeleteAccount = async () => {
         if (window.confirm('정말로 탈퇴하시겠습니까?')) {
             try {
-                await axiosInstance.delete('/api/auth/signout', {
+                await axiosInstance.delete('/user/signout', {
                     headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
-
+                // 탈퇴 후 로그아웃 및 리디렉션
+                localStorage.removeItem('Authorization');
+                localStorage.removeItem('userId');
                 setProfile(null);
                 setIsLoggedIn(false);
-                onLogout();
                 window.location.href = '/';
             } catch (error) {
                 console.error('회원 탈퇴 실패:', error);
@@ -195,4 +197,4 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
     );
 };
 
-export default MyPage;
+export default UserPage;
