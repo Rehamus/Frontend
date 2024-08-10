@@ -51,12 +51,12 @@ const NewPostReviewPage = () => {
             title,
             body: content,
             contentId,
-            prehashtag: selectedTags.join('#'),
+            prehashtag: '#'+selectedTags.join('#'),
             rating,
         };
 
         try {
-            const response = await axiosInstance.post(`/api/boards/2/post`, postData, {
+            const response = await axiosInstance.post(`/api/post`, postData, {
                 headers: {
                     Authorization: token,
                 }

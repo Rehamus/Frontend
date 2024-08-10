@@ -48,13 +48,13 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
                 loop={true}
                 breakpoints={{
                     1024: {
-                        slidesPerView: 3,
+                        slidesPerView: 4.2,
                     },
                     600: {
-                        slidesPerView: 3,
+                        slidesPerView: 2.2,
                     },
                     320: {
-                        slidesPerView: 1,
+                        slidesPerView: 1.2,
                     },
                 }}
             >

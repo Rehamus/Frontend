@@ -106,13 +106,13 @@ const App = () => {
         setIsLoggedIn(false);
         localStorage.removeItem('Authorization');
         localStorage.removeItem('RefreshToken');
-        localStorage.removeItem('tags');
+        localStorage.removeItem('userRole');
         setProfile(null);
     };
 
     const handleAdminLogout = () => {
         setIsAdminLoggedIn(false);
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem('userRole');
     };
 
     const handleTagsSubmit = async (selectedTags) => {

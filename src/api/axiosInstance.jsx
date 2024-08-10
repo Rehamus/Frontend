@@ -34,6 +34,7 @@ axiosInstance.interceptors.response.use(
                 console.error('토큰 갱신 실패:', refreshError);
                 localStorage.removeItem('Authorization');
                 localStorage.removeItem('RefreshToken');
+                localStorage.removeItem('userRole');
                 window.location.href = '/login';
                 return Promise.reject(refreshError);
             }

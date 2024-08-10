@@ -41,10 +41,27 @@
 }
 
 .boardItem {
+    border: 2px solid rgba(80, 80, 80, 0.15);
     background-color: #fff;
-    padding: 1rem;
+    padding: 0 1rem 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.postT{
+    margin-top: 0;
+    font-weight: bolder;
+    transform: scale(104%) translateX(-4px);
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(49, 49, 49, 0.35);
+}
+
+.Posts{
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
 }
 
 .boardTitle {
@@ -68,6 +85,18 @@
     gap: 0.5rem;
 }
 
+.boardPosts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* 게시글 사이에 1rem 간격 추가 */
+}
+
+.board-list{
+    min-height: 30px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 2px black;
+}
+
 .boardPost {
     display: flex;
     justify-content: space-between;
@@ -79,6 +108,7 @@
 .boardPost:last-child {
     border-bottom: none;
 }
+
 
 .boardPost:hover {
     background-color: #e5e3e3;

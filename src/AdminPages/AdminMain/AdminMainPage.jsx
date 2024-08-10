@@ -20,7 +20,6 @@ const AdminMainPage = ({ onAdminLogin }) => {
                 username,
                 password
             });
-            // Assuming the response contains a token and username
             localStorage.setItem('Authorization', response.data.accessToken);
             localStorage.setItem('RefreshToken', response.data.refreshToken);
             onAdminLogin();

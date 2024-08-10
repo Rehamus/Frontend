@@ -4,7 +4,7 @@ import axiosInstance from '../../api/axiosInstance';
 import PostList from '../../tool/PostList/PostList';
 import './BoardPage.css';
 
-const BoardPage = ({ isLoggedIn }) => { // isLoggedIn 상태를 props로 받습니다.
+const BoardPage = ({ isLoggedIn }) => {
     const [posts, setPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [boardTitle, setBoardTitle] = useState('');
@@ -16,29 +16,30 @@ const BoardPage = ({ isLoggedIn }) => { // isLoggedIn 상태를 props로 받습�
     const page = parseInt(query.get('page') || '1', 10);
     const offset = (page - 1) * 5;
     const pagesize = 5;
+    const asc = true; // 원하는 정렬 기준에 맞게 설정
 
     useEffect(() => {
-        axiosInstance.get(`/api/boards/${boardId}`, {
-            params: { offset, pagesize }
-        })
-            .then(response => {
-                setPosts(response.data.posts);
-                setTotalPages(response.data.totalPages);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the posts!", error);
-            });
+        const fetchPosts = async () => {
+            try {
+                let postType = boardId === '1' ? 'REVIEW' : 'NORMAL';
+                const response = await axiosInstance.get('/api/post/list', {
+                    params: { postType, page: page - 1, pagesize, asc }
+                });
 
+                const { totalPages, responseDtoList } = response.data;
+
+                setPosts(responseDtoList);
+                setTotalPages(totalPages);
+            } catch (error) {
+                console.error("There was an error fetching the posts!", error);
+            }
+        };
+
+        fetchPosts();
     }, [boardId, page]);
 
     useEffect(() => {
-        axiosInstance.get(`/api/boards/${boardId}/title`)
-            .then(response => {
-                setBoardTitle(response.data);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the board title!", error);
-            });
+        setBoardTitle(boardId === '1' ? '리뷰 게시글' : '일반 게시글');
     }, [boardId]);
 
     const handlePageClick = (pageNumber) => {
@@ -49,17 +50,16 @@ const BoardPage = ({ isLoggedIn }) => { // isLoggedIn 상태를 props로 받습�
         <div className="container">
             <div className="community-header">
                 <a href={`/community`}><h1>{boardTitle}</h1></a>
-                {isLoggedIn && ( // 로그인 상태에 따라 버튼을 조건부 렌더링합니다.
+                {isLoggedIn && boardId !== '1' && (
                     <a href={`/community/board/${boardId}/post/new`} className="button">새 글 작성</a>
                 )}
             </div>
-
             <PostList
                 posts={posts}
-                boardId={boardId}
                 currentPage={page}
                 totalPages={totalPages}
                 onPageClick={handlePageClick}
+                currentPostId={null}
             />
         </div>
     );

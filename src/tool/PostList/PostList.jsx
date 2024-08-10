@@ -4,7 +4,7 @@ import Pagination from '../../tool/Pagination/Pagination';
 import './PostList.css';
 import {Link} from "react-router-dom";
 
-const PostList = ({ posts, currentPostId, currentPage, totalPages, onPageClick }) => {
+const PostList = ({ posts,boardId, currentPostId, currentPage, totalPages, onPageClick }) => {
     const formatDateTime = (dateTime) => {
         const date = new Date(dateTime);
         const formattedDate = date.toLocaleDateString('ko-KR', {
@@ -24,7 +24,7 @@ const PostList = ({ posts, currentPostId, currentPage, totalPages, onPageClick }
             <div className="board-list">
                 {posts.map(post => (
                     <a
-                        href={`/community/board/${post.boardId}/post/${post.id}`}
+                        href={`/community/board/${boardId}/post/${post.id}`}
                         className={`board-item ${post.id === currentPostId ? 'current-post' : ''}`}
                         key={post.id}
                     >
