@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Modal from 'react-modal';
 import styles from './MyPage.module.css';
 import axiosInstance from '../../api/axiosInstance';
@@ -14,7 +14,6 @@ const UserPage = ({ setIsLoggedIn }) => {
     const [profile, setProfile] = useState(null);
     const [bookmarkedWebtoons, setBookmarkedWebtoons] = useState([]);
     const [bookmarkedWebnovels, setBookmarkedWebnovels] = useState([]);
-    const [recommendedPosts, setRecommendedPosts] = useState([]);
     const [recentPosts, setRecentPosts] = useState([]);
     const [newUsername, setNewUsername] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,7 +24,8 @@ const UserPage = ({ setIsLoggedIn }) => {
     const pageSize = 4;
     const offset = (currentPage - 1) * pageSize;
 
-    const fetchData = async () => {
+    // fetchData를 useCallback으로 감싸 메모이제이션
+    const fetchData = useCallback(async () => {
         try {
             const profileResponse = await axiosInstance.get('/api/user', {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
@@ -58,23 +58,8 @@ const UserPage = ({ setIsLoggedIn }) => {
                 }
             };
 
-            const fetchRecommendedPosts = async () => {
-                try {
-                    const response = await axiosInstance.get('/api/hashtag/recommend', {
-                        headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                        params: { offset: 8 }
-                    });
-                    return response.data;
-                } catch (error) {
-                    console.error("추천 리스트를 불러오는 중 오류가 발생했습니다!", error);
-                    return [];
-                }
-            };
-
             const webtoonsData = await fetchWebtoonsData();
             const webnovelsData = await fetchWebnovelsData();
-            const recommendedPosts = await fetchRecommendedPosts();
-
 
             const postsResponse = await axiosInstance.get(`/api/boards/user/posts`, {
                 params: { offset, pageSize },
@@ -85,19 +70,18 @@ const UserPage = ({ setIsLoggedIn }) => {
             setBookmarkedWebtoons(Array.isArray(webtoonsData) ? webtoonsData : []);
             setBookmarkedWebnovels(Array.isArray(webnovelsData) ? webnovelsData : []);
             setTotalPages(postsResponse.data.totalPages);
-            // 추천 게시물 설정
-            setRecommendedPosts(Array.isArray(recommendedPosts) ? recommendedPosts : []);
+
         } catch (error) {
             console.error('데이터 불러오기 실패:', error);
             setBookmarkedWebtoons([]);
             setBookmarkedWebnovels([]);
             setRecentPosts([]);
         }
-    };
+    }, [offset, pageSize]); // useCallback 의존성 배열에 필요한 값들 추가
 
     useEffect(() => {
         fetchData();
-    }, [currentPage]);
+    }, [currentPage, fetchData]); // fetchData를 의존성 배열에 추가
 
     const handleEditProfile = async () => {
         if (window.confirm('정말로 수정하시겠습니까?')) {

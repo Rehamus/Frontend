@@ -44,7 +44,7 @@ const AdminPostManagementPage = () => {
         };
 
         fetchPosts();
-    }, [page, sortBy, asc]); // 의존성 배열에 page, sortBy, asc 포함
+    }, [page, size ,sortBy, asc]);
 
     const handleSort = (newSortBy) => {
         if (sortBy === newSortBy) {
