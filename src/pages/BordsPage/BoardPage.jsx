@@ -14,7 +14,6 @@ const BoardPage = ({ isLoggedIn }) => {
 
     const query = new URLSearchParams(location.search);
     const page = parseInt(query.get('page') || '1', 10);
-    const offset = (page - 1) * 5;
     const pagesize = 5;
     const asc = true; // 원하는 정렬 기준에 맞게 설정
 
@@ -36,7 +35,7 @@ const BoardPage = ({ isLoggedIn }) => {
         };
 
         fetchPosts();
-    }, [boardId, page]);
+    }, [boardId, page,asc]);
 
     useEffect(() => {
         setBoardTitle(boardId === '1' ? '리뷰 게시글' : '일반 게시글');

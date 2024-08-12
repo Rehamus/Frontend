@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Modal from 'react-modal';
 import Plot from 'react-plotly.js';
 import styles from './MyPage.module.css';
@@ -6,7 +6,6 @@ import axiosInstance from '../../api/axiosInstance';
 import CardGrid from './CardGrid';
 import ProfileHeader from './ProfileHeader';
 import PostList from '../../tool/PostList/PostList';
-import PostCard from "../../tool/PostCard/PostCard";
 import EditProfileModal from './EditProfileModal';
 
 Modal.setAppElement('#root');
@@ -15,7 +14,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
     const [profile, setProfile] = useState(null);
     const [bookmarkedWebtoons, setBookmarkedWebtoons] = useState([]);
     const [bookmarkedWebnovels, setBookmarkedWebnovels] = useState([]);
-    const [recommendedPosts, setRecommendedPosts] = useState([]);
     const [recentPosts, setRecentPosts] = useState([]);
     const [newUsername, setNewUsername] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,12 +25,12 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
     const pageSize = 4;
     const offset = (currentPage - 1) * pageSize;
 
-    const fetchData = async () => {
+    // fetchData를 useCallback으로 감싸 메모이제이션
+    const fetchData = useCallback(async () => {
         try {
             const profileResponse = await axiosInstance.get('/api/user', {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
-            console.log(profileResponse.data)
             setProfile(profileResponse.data);
 
             const fetchWebtoonsData = async () => {
@@ -61,19 +59,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                 }
             };
 
-            const fetchRecommendedPosts = async () => {
-                try {
-                    const response = await axiosInstance.get('/api/hashtag/recommend', {
-                        headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                        params: { offset: 8 }
-                    });
-                    return response.data;
-                } catch (error) {
-                    console.error("추천 리스트를 불러오는 중 오류가 발생했습니다!", error);
-                    return [];
-                }
-            };
-
             const fetchUserHashtags = async () => {
                 try {
                     const response = await axiosInstance.get('/api/user/hashtags', {
@@ -89,7 +74,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
 
             const webtoonsData = await fetchWebtoonsData();
             const webnovelsData = await fetchWebnovelsData();
-            const recommendedPosts = await fetchRecommendedPosts();
             const hashtagsData = await fetchUserHashtags();  // 해시태그 데이터 가져오기
 
             const postsResponse = await axiosInstance.get(`/api/boards/user/posts`, {
@@ -101,7 +85,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
             setBookmarkedWebtoons(Array.isArray(webtoonsData) ? webtoonsData : []);
             setBookmarkedWebnovels(Array.isArray(webnovelsData) ? webnovelsData : []);
             setTotalPages(postsResponse.data.totalPages);
-            setRecommendedPosts(Array.isArray(recommendedPosts) ? recommendedPosts : []);
             setHashtags(hashtagsData);  // 해시태그 상태 설정
         } catch (error) {
             console.error('데이터 불러오기 실패:', error);
@@ -110,11 +93,11 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
             setRecentPosts([]);
             setHashtags([]);  // 오류 발생 시 해시태그 상태 초기화
         }
-    };
+    }, [offset, pageSize]); // useCallback 의존성 배열에 필요한 값들 추가
 
     useEffect(() => {
         fetchData();
-    }, [currentPage]);
+    }, [currentPage, fetchData]); // fetchData를 의존성 배열에 추가
 
     const handleEditProfile = async () => {
         if (window.confirm('정말로 수정하시겠습니까?')) {
@@ -194,14 +177,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                     북마크한 웹소설 <a href="/bookmarkedWebnovels" className={styles.more_btu}>더보기</a>
                 </h2>
                 <CardGrid items={bookmarkedWebnovels} />
-            </div>
-
-            <div className={styles.section}>
-                <h2>추천 리스트</h2>
-                <PostCard
-                    posts={recentPosts}
-                    currentPage={currentPage}
-                />
             </div>
 
             <div className={styles.section}>

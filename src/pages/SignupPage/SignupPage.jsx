@@ -5,10 +5,6 @@ import axiosInstance from "../../api/axiosInstance";
 const SignupPage = () => {
     const backendUrl = axiosInstance.defaults.baseURL;
 
-    const handleSocialLogin = (provider) => {
-        window.location.href = `${backendUrl}/oauth2/authorization/${provider}`;
-    };
-
     return (<div className="container">
             <main className="main">
                 <div className="signup-form">

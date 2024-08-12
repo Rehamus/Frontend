@@ -8,9 +8,7 @@ const NewPostPage = () => {
     const navigate = useNavigate();
 
     const [title, setTitle] = useState('');
-    const [postType, setPostType] = useState('NORMAL');
     const [content, setContent] = useState('');
-    const [prehashtag, setPrehashtag] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -22,8 +20,7 @@ const NewPostPage = () => {
             title,
             body: content,
             contentId: null,
-            prehashtag,
-            rating: null,
+            rating: null
         };
 
         try {

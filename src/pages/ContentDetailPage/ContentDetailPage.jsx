@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import CommentSection from '../../tool/CommentSection/CommentSection';
 import LikeBookmarkButtons from './LikeBookmarkButtons/LikeBookmarkButtons';
 import axiosInstance from '../../api/axiosInstance';
 import PostList from '../../tool/PostList/PostList';
-import Pagination from '../../tool/Pagination/Pagination';
 import styles from './ContentDetailPage.module.css';
 
 const platformColors = {
