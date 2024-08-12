@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Plot from 'react-plotly.js';
 import styles from './AdminMainPage.module.css';
@@ -11,31 +11,18 @@ const AdminMainPage = ({ onAdminLogin }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [notices, setNotices] = useState([]);
-    const [hashtags, setHashtags] = useState([]);
     const [map3D, setMap3D] = useState({});
     const [noticesPage, setNoticesPage] = useState(0);
-    const [hashtagsPage, setHashtagsPage] = useState(0);
     const [noticesTotalPages, setNoticesTotalPages] = useState(0);
-    const [hashtagsTotalPages, setHashtagsTotalPages] = useState(0);
     const [noticesSize] = useState(4);
     const [hashtagsSize] = useState(100);
-    const [asc, setAsc] = useState(false);
-    const [sortBy, setSortBy] = useState('id');
     const [loading, setLoading] = useState(true);
     const boardId = 0;
 
-    useEffect(() => {
-        fetchNotices();
-    }, [noticesPage]);
-
-    useEffect(() => {
-        fetchHashtags();
-    }, [hashtagsPage, sortBy, asc]);
-
-    const fetchNotices = async () => {
+    const fetchNotices = useCallback(async () => {
         try {
             const response = await axiosInstance.get(`/api/admin/post/notice/page`, {
-                params: { page: noticesPage, size: noticesSize, asc },
+                params: { page: noticesPage, size: noticesSize },
                 headers: { Authorization: localStorage.getItem('Authorization') }
             });
 
@@ -46,12 +33,12 @@ const AdminMainPage = ({ onAdminLogin }) => {
             console.error('공지사항 조회 중 오류 발생:', error);
             setNotices([]);
         }
-    };
+    }, [noticesPage, noticesSize]);
 
-    const fetchHashtags = async () => {
+    const fetchHashtags = useCallback(async () => {
         try {
             const response = await axiosInstance.get('/api/admin/hashtag/page', {
-                params: { page: hashtagsPage, size: hashtagsSize, sortBy, asc },
+                params: { page: 0, size: hashtagsSize },
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
 
@@ -66,16 +53,13 @@ const AdminMainPage = ({ onAdminLogin }) => {
                 console.error('Unexpected response format:', data);
             }
 
-            setHashtags(hashtagsData);
-            setHashtagsTotalPages(data.totalPages || 0);
             setMap3D(create3DMap(hashtagsData));
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch hashtags:', error);
-            setHashtags([]);
             setLoading(false);
         }
-    };
+    }, [hashtagsSize]);
 
     const create3DMap = (hashtags) => {
         const tiers = [];
@@ -102,37 +86,6 @@ const AdminMainPage = ({ onAdminLogin }) => {
         }
     };
 
-    const handleSort = (newSortBy) => {
-        if (sortBy === newSortBy) {
-            setAsc(!asc);
-        } else {
-            setSortBy(newSortBy);
-            setAsc(true);
-        }
-    };
-
-    const getSortIndicator = (column) => {
-        if (sortBy === column) {
-            return asc ? ' ▲' : ' ▼';
-        }
-        return '';
-    };
-
-    const handleDelete = async (hashtagId) => {
-        if (window.confirm('정말 이 해시태그를 삭제하시겠습니까?')) {
-            try {
-                await axiosInstance.delete(`/api/admin/hashtag/${hashtagId}`, {
-                    headers: { Authorization: `${localStorage.getItem('Authorization')}` }
-                });
-                setHashtags(hashtags.filter(hashtag => hashtag.id !== hashtagId));
-                alert('해시태그가 삭제되었습니다.');
-            } catch (error) {
-                console.error('Failed to delete hashtag:', error);
-                alert('해시태그 삭제에 실패했습니다.');
-            }
-        }
-    };
-
     const openModal = () => {
         setIsModalOpen(true);
     };
@@ -141,6 +94,14 @@ const AdminMainPage = ({ onAdminLogin }) => {
         setIsModalOpen(false);
         fetchNotices();
     };
+
+    useEffect(() => {
+        fetchNotices();
+    }, [fetchNotices]);
+
+    useEffect(() => {
+        fetchHashtags();
+    }, [fetchHashtags]);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -211,7 +172,6 @@ const AdminMainPage = ({ onAdminLogin }) => {
                             },
                         }}
                     />
-
                 </div>
 
                 <div className={styles['login-form']}>

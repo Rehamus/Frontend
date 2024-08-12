@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import styles from './NewNoticePage.module.css';
 
 const NewNoticePage = ({ closeModal }) => {
-    const navigate = useNavigate();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');

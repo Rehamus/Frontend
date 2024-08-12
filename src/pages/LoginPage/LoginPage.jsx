@@ -1,10 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import axiosInstance from '../../api/axiosInstance';
 
 const LoginPage = () => {
-    const navigate = useNavigate();
     const backendUrl = axiosInstance.defaults.baseURL;
 
     const handleSocialLogin = (provider) => {
