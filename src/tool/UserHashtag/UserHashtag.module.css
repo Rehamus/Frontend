@@ -54,7 +54,7 @@
     cursor: pointer;
     background-color: #f9f9f9;
     color: #505050;
-    transition: background-color 0.3s, border-color 0.3s, transform 0.5s ease-in-out;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.2s ease-in-out;
     display: block;
     justify-content: center;
     align-items: center;
@@ -66,8 +66,8 @@
     max-height: 5rem;
 }
 
-.genreItem.selected {
-    transform: rotate(360deg);
+.genreItem:hover {
+    transform: scale(105%);
 }
 
 .button {

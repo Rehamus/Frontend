@@ -10,7 +10,7 @@ const LikeBookmarkButtons = ({postId}) => {
         const fetchLikeStatus = async () => {
             try {
                 const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
-                const response = await axiosInstance.get(`/api/contents/like/${postId}`, {headers});
+                const response = await axiosInstance.get(`/api/contents/${postId}/like`, {headers});
                 setLiked(response.data);
             } catch (error) {
                 console.error('좋아요 상태를 불러오는 중 에러 발생:', error);
@@ -35,9 +35,9 @@ const LikeBookmarkButtons = ({postId}) => {
         try {
             const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
             if (liked) {
-                await axiosInstance.delete(`/api/contents/like/${postId}`, {headers});
+                await axiosInstance.delete(`/api/contents/${postId}/like`, {headers});
             } else {
-                await axiosInstance.post(`/api/contents/like/${postId}`, {}, {headers});
+                await axiosInstance.post(`/api/contents/${postId}/like`, {}, {headers});
             }
             setLiked(!liked);
         } catch (error) {

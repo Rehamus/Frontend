@@ -1,45 +1,150 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Plot from 'react-plotly.js';
 import styles from './AdminMainPage.module.css';
 import axiosInstance from '../../api/axiosInstance';
+import NewNoticePage from "../AdminNewNoticePage/NewNoticePage";
+import PostList from "../../tool/PostList/PostList";
 
 const AdminMainPage = ({ onAdminLogin }) => {
     const navigate = useNavigate();
-    const backendUrl = axiosInstance.defaults.baseURL;
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [notices, setNotices] = useState([]);
+    const [hashtags, setHashtags] = useState([]);
+    const [map3D, setMap3D] = useState({});
+    const [noticesPage, setNoticesPage] = useState(0);
+    const [hashtagsPage, setHashtagsPage] = useState(0);
+    const [noticesTotalPages, setNoticesTotalPages] = useState(0);
+    const [hashtagsTotalPages, setHashtagsTotalPages] = useState(0);
+    const [noticesSize] = useState(4);
+    const [hashtagsSize] = useState(100);
+    const [asc, setAsc] = useState(false);
+    const [sortBy, setSortBy] = useState('id');
+    const [loading, setLoading] = useState(true);
+    const boardId = 0;
 
-    const handleSocialLogin = (provider) => {
-        window.location.href = `${backendUrl}/oauth2/authorization/${provider}`;
+    useEffect(() => {
+        fetchNotices();
+    }, [noticesPage]);
+
+    useEffect(() => {
+        fetchHashtags();
+    }, [hashtagsPage, sortBy, asc]);
+
+    const fetchNotices = async () => {
+        try {
+            const response = await axiosInstance.get(`/api/admin/post/notice/page`, {
+                params: { page: noticesPage, size: noticesSize, asc },
+                headers: { Authorization: localStorage.getItem('Authorization') }
+            });
+
+            const { totalPages, responseDtoList } = response.data;
+            setNotices(responseDtoList || []);
+            setNoticesTotalPages(totalPages);
+        } catch (error) {
+            console.error('공지사항 조회 중 오류 발생:', error);
+            setNotices([]);
+        }
     };
 
-    const handleLogin = async () => {
+    const fetchHashtags = async () => {
         try {
-            const response = await axiosInstance.post('/api/auth/login', {
-                username,
-                password
+            const response = await axiosInstance.get('/api/admin/hashtag/page', {
+                params: { page: hashtagsPage, size: hashtagsSize, sortBy, asc },
+                headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
-            localStorage.setItem('Authorization', response.data.accessToken);
-            localStorage.setItem('RefreshToken', response.data.refreshToken);
-            onAdminLogin();
 
-            navigate('/admin/main');
+            const data = response.data;
+            let hashtagsData = [];
+
+            if (Array.isArray(data)) {
+                hashtagsData = data;
+            } else if (data && data.content) {
+                hashtagsData = data.content;
+            } else {
+                console.error('Unexpected response format:', data);
+            }
+
+            setHashtags(hashtagsData);
+            setHashtagsTotalPages(data.totalPages || 0);
+            setMap3D(create3DMap(hashtagsData));
+            setLoading(false);
         } catch (error) {
-            alert('Invalid username or password');
+            console.error('Failed to fetch hashtags:', error);
+            setHashtags([]);
+            setLoading(false);
         }
+    };
+
+    const create3DMap = (hashtags) => {
+        const tiers = [];
+        const tags = [];
+        const counts = [];
+
+        hashtags.forEach(({ tier, tag, count }) => {
+            tiers.push(tier);
+            tags.push(tag);
+            counts.push(count);
+        });
+
+        return { tiers, tags, counts };
     };
 
     const handleCrawlingAction = async (endpoint) => {
         try {
             await axiosInstance.post(`/api/content${endpoint}`,
-                {},{ headers: { Authorization: `${localStorage.getItem('Authorization')}`}}
-        );
+                {}, { headers: { Authorization: `${localStorage.getItem('Authorization')}` } }
+            );
             alert('작업이 성공적으로 완료되었습니다.');
         } catch (error) {
             alert('작업 중 오류가 발생했습니다.');
         }
     };
+
+    const handleSort = (newSortBy) => {
+        if (sortBy === newSortBy) {
+            setAsc(!asc);
+        } else {
+            setSortBy(newSortBy);
+            setAsc(true);
+        }
+    };
+
+    const getSortIndicator = (column) => {
+        if (sortBy === column) {
+            return asc ? ' ▲' : ' ▼';
+        }
+        return '';
+    };
+
+    const handleDelete = async (hashtagId) => {
+        if (window.confirm('정말 이 해시태그를 삭제하시겠습니까?')) {
+            try {
+                await axiosInstance.delete(`/api/admin/hashtag/${hashtagId}`, {
+                    headers: { Authorization: `${localStorage.getItem('Authorization')}` }
+                });
+                setHashtags(hashtags.filter(hashtag => hashtag.id !== hashtagId));
+                alert('해시태그가 삭제되었습니다.');
+            } catch (error) {
+                console.error('Failed to delete hashtag:', error);
+                alert('해시태그 삭제에 실패했습니다.');
+            }
+        }
+    };
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        fetchNotices();
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className={styles.container}>
@@ -77,23 +182,64 @@ const AdminMainPage = ({ onAdminLogin }) => {
                         </button>
                     </div>
                 </div>
-                <div className={styles['login-form']}>
+                <div className={styles['tags-form']}>
+                    <h2>해시태그 순위 탑 100</h2>
+                    <Plot
+                        data={[
+                            {
+                                x: map3D.tiers,
+                                y: map3D.tags,
+                                z: map3D.counts,
+                                mode: 'markers',
+                                marker: {
+                                    size: map3D.counts,
+                                    color: map3D.counts,
+                                    colorscale: 'Viridis',
+                                    opacity: 0.8,
+                                },
+                                type: 'scatter3d'
+                            },
+                        ]}
+                        layout={{
+                            width: 650,
+                            height: 500,
+                            margin: {
+                                l: 0,  // 왼쪽 마진
+                                r: 0,  // 오른쪽 마진
+                                t: 0,  // 상단 마진
+                                b: 0,  // 하단 마진
+                            },
+                        }}
+                    />
 
                 </div>
+
                 <div className={styles['login-form']}>
                     <h2>공지사항 관리</h2>
                     <div className={styles['crawling-btn-container']}>
-                        <button
-                                className={styles['crawling-btn']}> 공지 쓰기
-                        </button>
-                        <button
-                                className={styles['crawling-btn']}> 공지 쓰기
-                        </button>
-                        <button
-                                className={styles['crawling-btn']}> 공지 쓰기
+                        <button onClick={openModal}
+                                className={styles['crawling-btn']}>공지 쓰기
                         </button>
                     </div>
+                    <div>
+                        <h3>공지사항 목록</h3>
+                        <PostList
+                            posts={notices}
+                            boardId={boardId}
+                            currentPage={noticesPage}
+                            totalPages={noticesTotalPages}
+                            onPageClick={(newPage) => setNoticesPage(newPage)}
+                        />
+                    </div>
                 </div>
+
+                {isModalOpen && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modalContent}>
+                            <NewNoticePage closeModal={closeModal}/>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <footer className={styles.footer}>

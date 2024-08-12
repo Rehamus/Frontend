@@ -43,7 +43,7 @@ const AdminHashtagManagementPage = () => {
         };
 
         fetchHashtags();
-    }, [page, sortBy, asc]);
+    }, [page, sortBy, size, asc]);
 
     const handleSort = (newSortBy) => {
         if (sortBy === newSortBy) {

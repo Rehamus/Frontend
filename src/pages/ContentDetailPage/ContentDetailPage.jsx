@@ -27,8 +27,12 @@ const ContentDetailPage = ({ isLoggedIn }) => {
     useEffect(() => {
         const fetchContentDetail = async () => {
             try {
-                const response = await axiosInstance.get(`/api/contents/${cardId}`);
+                const response = await axiosInstance.get(`/api/contents/${cardId}`,{
+                    headers: { Authorization: `${localStorage.getItem('Authorization')}` }
+                });
                 setContent(response.data);
+                console.log(response.data)
+
                 setTotalPages(Math.ceil(response.data.posts.length / itemsPerPage));
                 await axiosInstance.post(`/api/contents/viewcount/${cardId}`);
             } catch (error) {
@@ -120,6 +124,13 @@ const ContentDetailPage = ({ isLoggedIn }) => {
                     <div className={styles.topBox}>
                         {isLoggedIn && <LikeBookmarkButtons postId={cardId} />}
                         <h2 className={styles.postDetailTitle}>{content.title}</h2>
+                        {content.contentHashTag && (
+                            <div className={styles.tag_container}>
+                                {content.contentHashTag.split('#').filter(tag => tag.trim() !== '').map((tag, index) => (
+                                    <button key={index} className={styles.tag_button}>{tag}</button>
+                                ))}
+                            </div>
+                        )}
                         <p className={styles.postDetailMeta}>작가: {content.author} | {content.date}</p>
                         <div className={styles.tag_container}>
                             {content.hashtags && content.hashtags.map(tag => (
@@ -149,7 +160,6 @@ const ContentDetailPage = ({ isLoggedIn }) => {
                     totalPages={totalPages}
                     onPageClick={handlePageClick}
                 />
-                <Pagination currentPage={page} totalPages={totalPages} onPageClick={handlePageClick} />
             </div>
         </div>
     );

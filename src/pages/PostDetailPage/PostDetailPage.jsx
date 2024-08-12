@@ -91,7 +91,6 @@ const PostDetailPage = ({isLoggedIn}) => {
                 try {
                     const response = await axiosInstance.get(`/api/contents/${contentId}`);
                     setContent(response.data);
-                    console.log(response.data)
                     await axiosInstance.post(`/api/contents/viewcount/${contentId}`);
                 } catch (error) {
                     console.error('Error fetching content detail:', error);

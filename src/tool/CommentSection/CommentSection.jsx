@@ -16,6 +16,9 @@ const CommentSection = ({ postId, isLoggedIn, currentUserId }) => {
     const [pageSize] = useState(3); // 댓글 페이지당 개수
 
     const fetchComments = async (page = currentPage - 1) => {
+        // 페이지가 음수가 되지 않도록 보호
+        if (page < 0) page = 0;
+
         try {
             const response = await axiosInstance.get(`/api/post/${postId}/comments`, {
                 params: { page, pagesize: pageSize }

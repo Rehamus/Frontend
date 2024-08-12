@@ -67,9 +67,10 @@ const App = () => {
 
     const fetchUserHashtags = async () => {
         try {
-            const response = await axiosInstance.get('/api/hashtag', {
+            const response = await axiosInstance.get('/api/user/hashtags', {
                 headers: {Authorization: `${localStorage.getItem('Authorization')}`}
             });
+            console.log(response.data)
 
             if (!response.data || response.data.length === 0) {
                 setShowTagsModal(true);
@@ -108,6 +109,7 @@ const App = () => {
         localStorage.removeItem('RefreshToken');
         localStorage.removeItem('userRole');
         setProfile(null);
+        window.read()
     };
 
     const handleAdminLogout = () => {
@@ -117,11 +119,10 @@ const App = () => {
 
     const handleTagsSubmit = async (selectedTags) => {
         try {
-            await axiosInstance.put('/api/hashtag', {tags: selectedTags}, {
+            await axiosInstance.put('/api/user/hashtags', {tags: selectedTags}, {
                 headers: {Authorization: `${localStorage.getItem('Authorization')}`}
             });
             setShowTagsModal(false);
-            localStorage.setItem('tags', selectedTags);
         } catch (error) {
             console.error('선호 장르 저장 실패:', error);
         }

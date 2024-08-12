@@ -32,6 +32,11 @@ const AdminLoginPage = ({onAdminLogin}) => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -44,6 +49,7 @@ const AdminLoginPage = ({onAdminLogin}) => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         className={styles['input-field']}
+                        onKeyPress={handleKeyPress}
                     />
                     <input
                         type="password"
@@ -51,6 +57,7 @@ const AdminLoginPage = ({onAdminLogin}) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className={styles['input-field']}
+                        onKeyPress={handleKeyPress}
                     />
                     <button onClick={handleLogin} className={styles['login-btn']}>로그인</button>
                 </div>
