@@ -20,13 +20,31 @@ const ContentPage = ({ type, title, genres, tabs }) => {
     const startX = useRef(0);
     const scrollLeft = useRef(0);
 
-    const fetchContent = useCallback(async (offset, pageSize, genre, subGenre, tab) => {
+    useEffect(() => {
+        setContents([]);
+        setOffset(0);
+        setHasMore(true);
+        fetchContent(0, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+    }, [selectedGenre, selectedSubGenre, selectedTab]);
+
+    useEffect(() => {
+        if (offset !== 0) {
+            fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+        }
+    }, [offset]);
+
+    const fetchContent = async (offset, pageSize, genre, subGenre, tab) => {
         if (loading) return;
         setLoading(true);
         try {
             const response = await axiosInstance.get(`/api/contents${type}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                params: { offset, pagesize: pageSize, genre: subGenre || '', tab }
+                params: {
+                    offset,
+                    pagesize: pageSize,
+                    genre: subGenre || '',
+                    platform: tab
+                }
             });
             const content = response.data.map(content => ({
                 ...content,
@@ -38,20 +56,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         } finally {
             setLoading(false);
         }
-    }, [loading, type]);
-
-    useEffect(() => {
-        setContents([]);
-        setOffset(0);
-        setHasMore(true);
-        fetchContent(0, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-    }, [fetchContent, pageSize, selectedGenre, selectedSubGenre, selectedTab]);
-
-    useEffect(() => {
-        if (offset !== 0) {
-            fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-        }
-    }, [offset, fetchContent, pageSize, selectedGenre, selectedSubGenre, selectedTab]);
+    };
 
     const handleScroll = useCallback(() => {
         if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1 && hasMore && !loading) {
@@ -131,7 +136,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
                         </button>
                         {selectedGenre === genre.name && genre.subGenres.length > 0 && (
                             <div
-                                style={{ transform: `translateX(-${leftPosition - 10}px)` }}
+                                style={{ transform: `translateX( -${leftPosition - 10}px)`}}
                                 className="subgenre-filter"
                                 ref={subgenreRef}
                                 onMouseDown={handleMouseDown}

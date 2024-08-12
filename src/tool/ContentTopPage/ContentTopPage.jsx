@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from "../../tool/Card/Card";
 import axiosInstance from "../../api/axiosInstance";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,12 +7,11 @@ import 'swiper/css/navigation';
 import styles from './ContentTopPage.module.css';
 import { Navigation } from 'swiper/modules';
 
-const ContentTopPage = ({ type, title, genres, tabs }) => {
+const ContentTopPage = ({ type, title }) => {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // useCallback을 사용하여 fetchContent를 메모이제이션
-    const fetchContent = useCallback(async (genre, subGenre, tab) => {
+    const fetchContent = async (genre, subGenre, tab) => {
         if (loading) return;
         setLoading(true);
         try {
@@ -30,12 +29,46 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
         } finally {
             setLoading(false);
         }
-    }, [loading, type]);
+    };
 
     useEffect(() => {
         setContents([]);
         fetchContent();
-    }, [fetchContent]);
+    }, [type]);  // type이 변경될 때마다 fetchContent를 호출
+
+    useEffect(() => {
+        const swiperContainer = document.querySelector('.swiper-container');
+        if (swiperContainer) {
+            const swiperInstance = new Swiper(swiperContainer, {
+                modules: [Navigation],
+                spaceBetween: 10,
+                slidesPerView: 4.2,
+                navigation: true,
+                loop: true,  // 기본적으로 루프 모드 활성화
+                breakpoints: {
+                    1024: {
+                        slidesPerView: 4.2,
+                    },
+                    600: {
+                        slidesPerView: 2.2,
+                    },
+                    320: {
+                        slidesPerView: 1.2,
+                    },
+                },
+            });
+
+            // 슬라이드 수와 설정된 값 비교
+            const totalSlides = swiperInstance.slides.length;
+            const slidesPerView = swiperInstance.params.slidesPerView;
+
+            // 슬라이드가 부족할 경우 루프 모드 비활성화
+            if (totalSlides <= slidesPerView) {
+                swiperInstance.params.loop = false;  // 루프 모드 비활성화
+                swiperInstance.update();  // 설정 업데이트
+            }
+        }
+    }, [contents]);  // contents가 업데이트될 때마다 실행
 
     return (
         <div className={styles.topContentContainer}>
@@ -45,7 +78,7 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
                 spaceBetween={10}
                 slidesPerView={4.2}
                 navigation
-                loop={true}
+                loop={true}  // 기본적으로 루프 모드 활성화
                 breakpoints={{
                     1024: {
                         slidesPerView: 4.2,

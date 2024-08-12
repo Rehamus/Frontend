@@ -35,7 +35,12 @@
     min-height: 700px;
     margin: 20px;
 }
-
+.sort_btn{
+    background:none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bolder;
+}
 .tags-form {
     flex: 1;
     background-color: #fff;
