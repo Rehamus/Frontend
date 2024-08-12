@@ -6,7 +6,7 @@ import './ContentPage.css';
 const ContentPage = ({ type, title, genres, tabs }) => {
     const [contents, setContents] = useState([]);
     const [offset, setOffset] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize] = useState(10);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [selectedGenre, setSelectedGenre] = useState('전체');
@@ -14,27 +14,13 @@ const ContentPage = ({ type, title, genres, tabs }) => {
     const [selectedTab, setSelectedTab] = useState(tabs[0]);
     const genreRefs = useRef([]);
     const [leftPosition, setLeftPosition] = useState(0);
-    const [maxWidth, setMaxWidth] = useState(window.innerWidth - 80);
     const containerRef = useRef(null);
     const subgenreRef = useRef(null);
     const isDown = useRef(false);
     const startX = useRef(0);
     const scrollLeft = useRef(0);
 
-    useEffect(() => {
-        setContents([]);
-        setOffset(0);
-        setHasMore(true);
-        fetchContent(0, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-    }, [selectedGenre, selectedSubGenre, selectedTab]);
-
-    useEffect(() => {
-        if (offset !== 0) {
-            fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-        }
-    }, [offset]);
-
-    const fetchContent = async (offset, pageSize, genre, subGenre, tab) => {
+    const fetchContent = useCallback(async (offset, pageSize, genre, subGenre, tab) => {
         if (loading) return;
         setLoading(true);
         try {
@@ -52,7 +38,20 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [loading, type]);
+
+    useEffect(() => {
+        setContents([]);
+        setOffset(0);
+        setHasMore(true);
+        fetchContent(0, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+    }, [fetchContent, pageSize, selectedGenre, selectedSubGenre, selectedTab]);
+
+    useEffect(() => {
+        if (offset !== 0) {
+            fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+        }
+    }, [offset, fetchContent, pageSize, selectedGenre, selectedSubGenre, selectedTab]);
 
     const handleScroll = useCallback(() => {
         if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1 && hasMore && !loading) {
@@ -66,16 +65,6 @@ const ContentPage = ({ type, title, genres, tabs }) => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [handleScroll]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setMaxWidth(window.innerWidth - 80);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
 
     const handleGenreChange = (genre) => {
         if (selectedGenre === genre) {
@@ -124,7 +113,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         if (!isDown.current) return;
         e.preventDefault();
         const x = e.pageX - subgenreRef.current.offsetLeft;
-        const walk = (x - startX.current) ; // Scroll speed
+        const walk = (x - startX.current); // Scroll speed
         subgenreRef.current.scrollLeft = scrollLeft.current - walk;
     };
 
@@ -142,7 +131,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
                         </button>
                         {selectedGenre === genre.name && genre.subGenres.length > 0 && (
                             <div
-                                style={{ transform: `translateX( -${leftPosition - 10}px)`}}
+                                style={{ transform: `translateX(-${leftPosition - 10}px)` }}
                                 className="subgenre-filter"
                                 ref={subgenreRef}
                                 onMouseDown={handleMouseDown}

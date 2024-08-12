@@ -42,7 +42,6 @@ import AdminContentManagementPage from "./AdminPages/AdminContentsController/Adm
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-    const [profile, setProfile] = useState(null);
     const [showTagsModal, setShowTagsModal] = useState(false);
 
     useEffect(() => {
@@ -108,7 +107,6 @@ const App = () => {
         localStorage.removeItem('Authorization');
         localStorage.removeItem('RefreshToken');
         localStorage.removeItem('userRole');
-        setProfile(null);
         window.read()
     };
 

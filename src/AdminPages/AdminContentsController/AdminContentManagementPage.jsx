@@ -43,7 +43,7 @@ const AdminContentManagementPage = () => {
         };
 
         fetchContents();
-    }, [page, sortBy, asc]);
+    }, [page, sortBy,size, asc]);
 
     const handleSort = (newSortBy) => {
         if (sortBy === newSortBy) {
