@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import './CommentSection.css';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const CommentSection = ({ postId, isLoggedIn }) => {
+const CommentSection = ({ postId, isLoggedIn, currentUserId }) => {
     const [comments, setComments] = useState([]);
     const [commentContent, setCommentContent] = useState('');
     const [replyContents, setReplyContents] = useState({});
@@ -11,12 +11,19 @@ const CommentSection = ({ postId, isLoggedIn }) => {
     const [loading, setLoading] = useState(true);
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editingContent, setEditingContent] = useState('');
-    const currentUserId = localStorage.getItem('userId');
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize] = useState(3); // 댓글 페이지당 개수
 
-    const fetchComments = async () => {
+    const fetchComments = async (page = currentPage - 1) => {
+        // 페이지가 음수가 되지 않도록 보호
+        if (page < 0) page = 0;
+
         try {
-            const response = await axiosInstance.get(`/api/post/${postId}/comments`);
-            const commentsData = await Promise.all(response.data.map(async (comment) => {
+            const response = await axiosInstance.get(`/api/post/${postId}/comments`, {
+                params: { page, pagesize: pageSize }
+            });
+            const commentsData = await Promise.all(response.data.responseDtoList.map(async (comment) => {
                 let likeResponse = { data: false };
                 if (isLoggedIn) {
                     likeResponse = await axiosInstance.get(`/api/post/${postId}/comments/${comment.id}/like`, {
@@ -47,6 +54,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
                 };
             }));
             setComments(commentsData);
+            setTotalPages(response.data.totalPages);
             setLoading(false);
         } catch (error) {
             console.error("댓글을 불러오는 중 오류가 발생했습니다!", error);
@@ -55,8 +63,21 @@ const CommentSection = ({ postId, isLoggedIn }) => {
     };
 
     useEffect(() => {
-        fetchComments();
+        const loadLastPage = async () => {
+            const response = await axiosInstance.get(`/api/post/${postId}/comments`, {
+                params: { page: 0, pagesize: pageSize }
+            });
+            setTotalPages(response.data.totalPages);
+            setCurrentPage(response.data.totalPages);
+            fetchComments(response.data.totalPages - 1); // 마지막 페이지 댓글 불러오기
+        };
+
+        loadLastPage();
     }, [postId, isLoggedIn]);
+
+    useEffect(() => {
+        fetchComments(currentPage - 1);
+    }, [currentPage]);
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
@@ -67,7 +88,8 @@ const CommentSection = ({ postId, isLoggedIn }) => {
             }, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
-            fetchComments();
+            setCurrentPage(totalPages); // 마지막 페이지로 이동
+            fetchComments(totalPages - 1);
             setCommentContent('');
         } catch (error) {
             console.error("댓글을 작성하는 중 오류가 발생했습니다!", error);
@@ -83,7 +105,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
             }, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
-            fetchComments();  // 대댓글 작성 후 댓글 목록 다시 불러오기
+            fetchComments(currentPage - 1);  // 현재 페이지에서 댓글 목록 다시 불러오기
             setReplyContents({ ...replyContents, [commentId]: '' });
             setActiveReplyId(null);
         } catch (error) {
@@ -102,11 +124,9 @@ const CommentSection = ({ postId, isLoggedIn }) => {
 
     const handleEditClick = (commentId, content) => {
         if (editingCommentId === commentId) {
-            // If already editing this comment, close edit mode
             setEditingCommentId(null);
             setEditingContent('');
         } else {
-            // Otherwise, open edit mode for this comment
             setEditingCommentId(commentId);
             setEditingContent(content);
         }
@@ -120,7 +140,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
             }, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
-            fetchComments();
+            fetchComments(currentPage - 1); // 현재 페이지에서 댓글 목록 다시 불러오기
             setEditingCommentId(null);
             setEditingContent('');
         } catch (error) {
@@ -133,7 +153,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
             await axiosInstance.delete(`/api/post/${postId}/comments/${commentId}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
-            fetchComments();
+            fetchComments(currentPage - 1); // 현재 페이지에서 댓글 목록 다시 불러오기
         } catch (error) {
             console.error("댓글을 삭제하는 중 오류가 발생했습니다!", error);
         }
@@ -150,10 +170,14 @@ const CommentSection = ({ postId, isLoggedIn }) => {
                     headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
             }
-            fetchComments();
+            fetchComments(currentPage - 1); // 현재 페이지에서 댓글 목록 다시 불러오기
         } catch (error) {
             console.error("좋아요 처리 중 에러 발생:", error);
         }
+    };
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
     const renderComments = (comments, parentCommentId = null) => {
@@ -239,7 +263,7 @@ const CommentSection = ({ postId, isLoggedIn }) => {
 
     return (
         <div className="comment-section">
-            <h3>댓글 ({comments.length})</h3>
+            <h3>댓글</h3>
             {renderComments(comments)}
             {isLoggedIn && (
                 <form className="comment-form" onSubmit={handleCommentSubmit}>
@@ -254,6 +278,17 @@ const CommentSection = ({ postId, isLoggedIn }) => {
                     <button type="submit" className="button left_button">댓글 작성</button>
                 </form>
             )}
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i + 1}
+                        onClick={() => handlePageChange(i + 1)}
+                        className={`page-button ${currentPage === i + 1 ? 'active' : ''}`}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };

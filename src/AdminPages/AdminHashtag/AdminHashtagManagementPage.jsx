@@ -7,10 +7,16 @@ const AdminHashtagManagementPage = () => {
     const [hashtags, setHashtags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
-    const [size] = useState(10); // 페이지 크기
-    const [sortBy, setSortBy] = useState('createdAt');
+    const [size] = useState(10);
+    const [sortBy, setSortBy] = useState('id');
     const [asc, setAsc] = useState(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setPage(0);
+        setSortBy('id');
+        setAsc(true);
+    }, []);
 
     useEffect(() => {
         const fetchHashtags = async () => {
@@ -37,7 +43,7 @@ const AdminHashtagManagementPage = () => {
         };
 
         fetchHashtags();
-    }, [page, size, sortBy, asc]);
+    }, [page, sortBy, size, asc]);
 
     const handleSort = (newSortBy) => {
         if (sortBy === newSortBy) {
@@ -46,6 +52,13 @@ const AdminHashtagManagementPage = () => {
             setSortBy(newSortBy);
             setAsc(true);
         }
+    };
+
+    const getSortIndicator = (column) => {
+        if (sortBy === column) {
+            return asc ? ' ▲' : ' ▼';
+        }
+        return '';
     };
 
     const handleDelete = async (hashtagId) => {
@@ -74,10 +87,18 @@ const AdminHashtagManagementPage = () => {
             <table className={styles.table}>
                 <thead>
                 <tr>
-                    <th onClick={() => handleSort('id')}>ID</th>
-                    <th onClick={() => handleSort('tier')}>Tier</th>
-                    <th onClick={() => handleSort('tag')}>Tag</th>
-                    <th onClick={() => handleSort('count')}>Count</th>
+                    <th onClick={() => handleSort('id')}>
+                        ID{getSortIndicator('id')}
+                    </th>
+                    <th onClick={() => handleSort('tier')}>
+                        Tier{getSortIndicator('tier')}
+                    </th>
+                    <th onClick={() => handleSort('tag')}>
+                        Tag{getSortIndicator('tag')}
+                    </th>
+                    <th onClick={() => handleSort('count')}>
+                        Count{getSortIndicator('count')}
+                    </th>
                     <th>Actions</th>
                 </tr>
                 </thead>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Card from "../../tool/Card/Card";
 import axiosInstance from "../../api/axiosInstance";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -10,14 +10,9 @@ import { Navigation } from 'swiper/modules';
 const ContentTopPage = ({ type, title, genres, tabs }) => {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
-    useEffect(() => {
-        setContents([]);
-        fetchContent(selectedTab);
-    }, [selectedTab]);
-
-    const fetchContent = async (genre, subGenre, tab) => {
+    // useCallback을 사용하여 fetchContent를 메모이제이션
+    const fetchContent = useCallback(async (genre, subGenre, tab) => {
         if (loading) return;
         setLoading(true);
         try {
@@ -35,7 +30,12 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [loading, type]);
+
+    useEffect(() => {
+        setContents([]);
+        fetchContent();
+    }, [fetchContent]);
 
     return (
         <div className={styles.topContentContainer}>
@@ -48,13 +48,13 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
                 loop={true}
                 breakpoints={{
                     1024: {
-                        slidesPerView: 3,
+                        slidesPerView: 4.2,
                     },
                     600: {
-                        slidesPerView: 3,
+                        slidesPerView: 2.2,
                     },
                     320: {
-                        slidesPerView: 1,
+                        slidesPerView: 1.2,
                     },
                 }}
             >

@@ -2,23 +2,42 @@
     padding: 20px;
 }
 
-.backButton {
-    margin-bottom: 20px;
-}
-
 .table {
     width: 100%;
     border-collapse: collapse;
 }
 
 .table th, .table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.table th {
+.selectedHeader {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.row:hover {
+    background-color: #f1f1f1;
+}
+
+.deleteButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
     cursor: pointer;
 }
+
+.deleteButton:hover {
+    background-color: darkred;
+}
+
 
 .pagination {
     display: flex;
@@ -44,12 +63,6 @@
 .pagination button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
-
-
-.deleteButton {
-    color: red;
-    cursor: pointer;
 }
 
 .backButton {

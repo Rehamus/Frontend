@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import CommentSection from '../../tool/CommentSection/CommentSection';
@@ -13,8 +13,8 @@ const platformColors = {
     '네이버': '#00C73C'
 };
 
-const PostDetailPage = ({ isLoggedIn }) => {
-    const { boardId, postId } = useParams();
+const PostDetailPage = ({isLoggedIn}) => {
+    const {boardId, postId} = useParams();
     const [post, setPost] = useState(null);
     const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -26,13 +26,16 @@ const PostDetailPage = ({ isLoggedIn }) => {
     const [relatedPosts, setRelatedPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const userId = localStorage.getItem('userId');
+    const [userProfile, setUserProfile] = useState(null);
     const navigate = useNavigate();
+
+    // Determine post type based on boardId
+    const postType = boardId === '1' ? 'REVIEW' : 'NORMAL';
 
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axiosInstance.get(`/api/boards/${boardId}/post/${postId}`);
+                const response = await axiosInstance.get(`/api/post/${postId}`);
                 const postData = response.data;
                 setPost(postData);
                 setEditedTitle(postData.title);
@@ -49,10 +52,27 @@ const PostDetailPage = ({ isLoggedIn }) => {
     }, [boardId, postId]);
 
     useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (isLoggedIn) {
+                try {
+                    const response = await axiosInstance.get(`/api/user`, {
+                        headers: {Authorization: `${localStorage.getItem('Authorization')}`}
+                    });
+                    setUserProfile(response.data); // 유저 프로필 상태 설정
+                } catch (error) {
+                    console.error("There was an error fetching the user profile!", error);
+                }
+            }
+        };
+
+        fetchUserProfile();
+    }, [isLoggedIn]);
+
+    useEffect(() => {
         const fetchLikeStatus = async () => {
             try {
-                const response = await axiosInstance.get(`/api/like/${postId}/likesPost`, {
-                    headers: { Authorization: `${localStorage.getItem('Authorization')}` }
+                const response = await axiosInstance.get(`/api/post/${postId}/like`, {
+                    headers: {Authorization: `${localStorage.getItem('Authorization')}`}
                 });
                 setLiked(response.data);
             } catch (error) {
@@ -71,7 +91,6 @@ const PostDetailPage = ({ isLoggedIn }) => {
                 try {
                     const response = await axiosInstance.get(`/api/contents/${contentId}`);
                     setContent(response.data);
-
                     await axiosInstance.post(`/api/contents/viewcount/${contentId}`);
                 } catch (error) {
                     console.error('Error fetching content detail:', error);
@@ -85,10 +104,10 @@ const PostDetailPage = ({ isLoggedIn }) => {
     useEffect(() => {
         const fetchRelatedPosts = async () => {
             try {
-                const response = await axiosInstance.get(`/api/boards/${boardId}`, {
-                    params: { offset: (currentPage - 1) * 5, pagesize: 5 }
+                const response = await axiosInstance.get('/api/post/list', {
+                    params: {postType, page: currentPage - 1, pagesize: 5, asc: true}
                 });
-                setRelatedPosts(response.data.posts);
+                setRelatedPosts(response.data.responseDtoList);
                 setTotalPages(response.data.totalPages);
             } catch (error) {
                 console.error("There was an error fetching related posts!", error);
@@ -96,15 +115,15 @@ const PostDetailPage = ({ isLoggedIn }) => {
         };
 
         fetchRelatedPosts();
-    }, [boardId, currentPage]);
+    }, [boardId, currentPage, postType]);
 
     const handleLikeButtonClick = async () => {
-        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
+        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
         try {
             if (liked) {
-                await axiosInstance.delete(`/api/like/${postId}/likesPost`, { headers });
+                await axiosInstance.delete(`/api/post/${postId}/like`, {headers});
             } else {
-                await axiosInstance.post(`/api/like/${postId}/likesPost`, {}, { headers });
+                await axiosInstance.post(`/api/post/${postId}/like`, {}, {headers});
             }
             setLiked(!liked);
         } catch (error) {
@@ -113,9 +132,9 @@ const PostDetailPage = ({ isLoggedIn }) => {
     };
 
     const handleDelete = async () => {
-        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
+        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
         try {
-            await axiosInstance.delete(`/api/boards/deletePost/${boardId}/post/${postId}`, { headers });
+            await axiosInstance.delete(`/api/post/${postId}`, {headers});
             navigate(`/community/board/${boardId}`);
         } catch (error) {
             console.error("There was an error deleting the post!", error);
@@ -132,13 +151,13 @@ const PostDetailPage = ({ isLoggedIn }) => {
             return;
         }
 
-        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
+        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
         try {
-            await axiosInstance.put(`/api/boards/${boardId}/post/${postId}`, {
+            await axiosInstance.put(`/api/post/${postId}`, {
                 title: editedTitle,
                 body: editedContent
-            }, { headers });
-            setPost({ ...post, title: editedTitle, body: editedContent });
+            }, {headers});
+            setPost({...post, title: editedTitle, body: editedContent});
             setEditMode(false);
         } catch (error) {
             console.error("There was an error saving the post!", error);
@@ -166,10 +185,10 @@ const PostDetailPage = ({ isLoggedIn }) => {
             </div>
             <div className={`post-detail-container ${post.postType === "REVIEW" ? "review" : ""}`}>
                 {post.postType === "REVIEW" && content && (
-                    <div className={styles.post_img} style={{ backgroundImage: `url(${content.imgUrl})` }}>
+                    <div className={styles.post_img} style={{backgroundImage: `url(${content.imgUrl})`}}>
                         <div
                             className={styles.post_platform}
-                            style={{ backgroundColor: platformColor }}
+                            style={{backgroundColor: platformColor}}
                         >
                             {content.platform}
                         </div>
@@ -193,11 +212,13 @@ const PostDetailPage = ({ isLoggedIn }) => {
                                     </a>
                                 </div>
                             </div>
-                            <div className={styles.tag_container}>
-                                {content.hashtags.map(tag => (
-                                    <button key={tag} className={styles.tag_button}>{tag}</button>
-                                ))}
-                            </div>
+                            {content.contentHashTag && (
+                                <div className={styles.tag_container}>
+                                    {content.contentHashTag.split('#').filter(tag => tag.trim() !== '').map((tag, index) => (
+                                        <button key={index} className={styles.tag_button}>{tag}</button>
+                                    ))}
+                                </div>
+                            )}
                             <p className={styles.contentDetailMeta}>작가: {content.author} </p>
                             <div className={styles.postDetailContent}>
                                 <p>{content.description}</p>
@@ -205,7 +226,7 @@ const PostDetailPage = ({ isLoggedIn }) => {
                         </div>
                     )}
                     <div className="post-detail_3">
-                        {isLoggedIn && post.userId && userId !== post.userId.toString() && (
+                        {isLoggedIn && userProfile && userProfile.id !== post.userId && (
                             <button
                                 className={`post-like-button ${liked ? 'liked' : ''}`}
                                 onClick={handleLikeButtonClick}
@@ -225,9 +246,8 @@ const PostDetailPage = ({ isLoggedIn }) => {
                                 <h2 className="post-detail-title">{post.title}</h2>
                             )}
                         </div>
-                        <p className="post-detail-meta"> <Link to={`/user/${post.userId}`}>작성자: {post.nickname}</Link> | {post.createdAt}
-
-                        </p>
+                        <p className="post-detail-meta"><Link
+                            to={`/user/${post.userId}`}>작성자: {post.nickname}</Link> | {post.createdAt}</p>
                         <div className="post-detail-content">
                             {editMode ? (
                                 <textarea
@@ -239,7 +259,7 @@ const PostDetailPage = ({ isLoggedIn }) => {
                                 <p>{post.body}</p>
                             )}
                         </div>
-                        {isLoggedIn && post.userId && userId === post.userId.toString() && (
+                        {isLoggedIn && userProfile && userProfile.id === post.userId && (
                             <div className="post-actions">
                                 {editMode ? (
                                     <button className="post-save-button" onClick={handleSave}>저장</button>
@@ -254,7 +274,7 @@ const PostDetailPage = ({ isLoggedIn }) => {
                     </div>
                 </div>
             </div>
-            <CommentSection postId={postId} isLoggedIn={isLoggedIn} />
+            <CommentSection postId={postId} isLoggedIn={isLoggedIn} currentUserId={userProfile ? userProfile.id : null} />
             <div className="related-posts">
                 <h3>관련 포스트</h3>
                 <PostList

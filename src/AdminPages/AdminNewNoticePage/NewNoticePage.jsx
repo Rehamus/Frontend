@@ -1,48 +1,41 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
-import styles from './NewPostPage.module.css';
+import styles from './NewNoticePage.module.css';
 
-const NewPostPage = () => {
-    const { boardId } = useParams();
+const NewNoticePage = ({ closeModal }) => {
     const navigate = useNavigate();
 
     const [title, setTitle] = useState('');
-    const [postType, setPostType] = useState('NORMAL');
     const [content, setContent] = useState('');
-    const [prehashtag, setPrehashtag] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const token = localStorage.getItem('Authorization');
 
-        const postData = {
-            postType: "NORMAL",
+        const noticeData = {
             title,
             body: content,
-            contentId: null,
-            prehashtag,
-            rating: null,
         };
 
         try {
-            const response = await axiosInstance.post(`/api/post`, postData, {
+            const response = await axiosInstance.post(`/api/admin/post/notice`, noticeData, {
                 headers: {
                     Authorization: token,
                 }
             });
             if (response.status === 201) {
-                navigate(`/community/board/${boardId}`);
+                closeModal();
             }
         } catch (error) {
-            console.error('Error creating post:', error);
+            console.error('공지사항 작성 중 오류 발생:', error);
         }
     };
 
     return (
         <div className={styles.container}>
-            <h1>새 글 작성</h1>
+            <h1>공지사항 작성</h1>
             <form onSubmit={handleSubmit}>
                 <div className={styles['form-group']}>
                     <label htmlFor="title">제목</label>
@@ -66,11 +59,11 @@ const NewPostPage = () => {
                     ></textarea>
                 </div>
                 <div className={styles['form-group']}>
-                    <button type="submit" className={styles.button}>글 작성</button>
+                    <button type="submit" className={styles.button}>공지 작성</button>
                     <button
                         type="button"
                         className={`${styles.button} ${styles['button-secondary']}`}
-                        onClick={() => navigate(`/community/board/${boardId}`)}
+                        onClick={closeModal}
                     >
                         취소
                     </button>
@@ -80,4 +73,4 @@ const NewPostPage = () => {
     );
 };
 
-export default NewPostPage;
+export default NewNoticePage;

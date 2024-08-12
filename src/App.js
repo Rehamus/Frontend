@@ -37,11 +37,11 @@ import './App.css';
 import AdminPostManagementPage from "./AdminPages/AdminPostController/AdminPostManagementPage";
 import AdminHashtagManagementPage from "./AdminPages/AdminHashtag/AdminHashtagManagementPage";
 import AdminRoute from "./api/AdminRoute";
+import AdminContentManagementPage from "./AdminPages/AdminContentsController/AdminContentManagementPage";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-    const [profile, setProfile] = useState(null);
     const [showTagsModal, setShowTagsModal] = useState(false);
 
     useEffect(() => {
@@ -66,9 +66,10 @@ const App = () => {
 
     const fetchUserHashtags = async () => {
         try {
-            const response = await axiosInstance.get('/api/hashtag', {
+            const response = await axiosInstance.get('/api/user/hashtags', {
                 headers: {Authorization: `${localStorage.getItem('Authorization')}`}
             });
+            console.log(response.data)
 
             if (!response.data || response.data.length === 0) {
                 setShowTagsModal(true);
@@ -105,22 +106,21 @@ const App = () => {
         setIsLoggedIn(false);
         localStorage.removeItem('Authorization');
         localStorage.removeItem('RefreshToken');
-        localStorage.removeItem('tags');
-        setProfile(null);
+        localStorage.removeItem('userRole');
+        window.read()
     };
 
     const handleAdminLogout = () => {
         setIsAdminLoggedIn(false);
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem('userRole');
     };
 
     const handleTagsSubmit = async (selectedTags) => {
         try {
-            await axiosInstance.put('/api/hashtag', {tags: selectedTags}, {
+            await axiosInstance.put('/api/user/hashtags', {tags: selectedTags}, {
                 headers: {Authorization: `${localStorage.getItem('Authorization')}`}
             });
             setShowTagsModal(false);
-            localStorage.setItem('tags', selectedTags);
         } catch (error) {
             console.error('선호 장르 저장 실패:', error);
         }
@@ -166,6 +166,7 @@ const App = () => {
                 <Route path="/admin/user" element={<AdminRoute><AdminUserManagementPage/></AdminRoute>}/>
                 <Route path="/admin/post" element={<AdminRoute><AdminPostManagementPage/></AdminRoute>}/>
                 <Route path="/admin/hashtag" element={<AdminRoute><AdminHashtagManagementPage/></AdminRoute>}/>
+                <Route path="/admin/content" element={<AdminRoute><AdminContentManagementPage/></AdminRoute>}/>
             </Routes>
             {showTagsModal && <UserHashtag onSubmit={handleTagsSubmit} onClose={() => setShowTagsModal(false)}/>}
         </div>

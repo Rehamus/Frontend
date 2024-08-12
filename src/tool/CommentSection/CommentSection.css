@@ -203,3 +203,24 @@
     right: .65rem;
     bottom: 1.45rem;
 }
+
+.page-button{
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+}
+
+.page-button:hover{
+    background-color: #4285f4;
+    color: #fff;
+    border-color: #4285f4;
+}
+
+.page-button.active{
+    background-color: #4285f4;
+    color: #fff;
+    border-color: #4285f4;
+}

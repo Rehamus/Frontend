@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './UserHashtag.module.css';
 
-const storedTags = localStorage.getItem('tags');
-const genres = storedTags ? storedTags.split('#').filter(tag => tag !== "") : [];
 
 const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
