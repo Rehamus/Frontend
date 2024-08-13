@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import PostList from '../../tool/PostList/PostList';
 import './BoardPage.css';
@@ -8,6 +8,8 @@ const BoardPage = ({ isLoggedIn }) => {
     const [posts, setPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [boardTitle, setBoardTitle] = useState('');
+    const [noticePosts, setNoticePosts] = useState([]);
+
     const { boardId } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -19,6 +21,12 @@ const BoardPage = ({ isLoggedIn }) => {
 
     useEffect(() => {
         const fetchPosts = async () => {
+
+            const noticeResponse = await axiosInstance.get(`/api/post/list`, {
+                params: {postType: 'NOTICE', page: 0, pagesize: 3, asc: false}
+            });
+            setNoticePosts(noticeResponse.data.responseDtoList);
+
             try {
                 let postType = boardId === '1' ? 'REVIEW' : 'NORMAL';
                 const response = await axiosInstance.get('/api/post/list', {
@@ -53,6 +61,7 @@ const BoardPage = ({ isLoggedIn }) => {
                     <a href={`/community/board/${boardId}/post/new`} className="button">새 글 작성</a>
                 )}
             </div>
+            <PostList posts={noticePosts} boardId={0}/>
             <PostList
                 posts={posts}
                 currentPage={page}

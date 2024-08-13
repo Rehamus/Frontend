@@ -1,7 +1,8 @@
 
 .c_container {
-    max-width: 1400px;
-    margin: 2rem auto;
+    max-width: 1200px;
+    min-height: 800px;
+    margin: 2rem auto 4rem;
     padding: 0 1rem;
 }
 
@@ -43,7 +44,7 @@
 .boardItem {
     border: 2px solid rgba(80, 80, 80, 0.15);
     background-color: #fff;
-    padding: 0 1rem 1rem;
+    padding: 0 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
@@ -62,6 +63,7 @@
 .Posts{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
+    padding-bottom: 0;
 }
 
 .boardTitle {
