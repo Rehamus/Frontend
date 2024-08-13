@@ -21,17 +21,15 @@ const ContentPage = ({ type, title, genres, tabs }) => {
     const scrollLeft = useRef(0);
 
     useEffect(() => {
-        setContents([]);
-        setOffset(0);
-        setHasMore(true);
-        fetchContent(0, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-    }, [selectedGenre, selectedSubGenre, selectedTab]);
-
-    useEffect(() => {
-        if (offset !== 0) {
-            fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+        if (offset === 0) {
+            setContents([]);
+            setHasMore(true);
         }
-    }, [offset]);
+
+        fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageSize, selectedGenre, selectedSubGenre, selectedTab, offset]);
+
 
     const fetchContent = async (offset, pageSize, genre, subGenre, tab) => {
         if (loading) return;
@@ -39,13 +37,9 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         try {
             const response = await axiosInstance.get(`/api/contents${type}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                params: {
-                    offset,
-                    pagesize: pageSize,
-                    genre: subGenre || '',
-                    platform: tab
-                }
+                params: { offset, pagesize: pageSize, genre: subGenre || '', tab }
             });
+            console.log(response.data)
             const content = response.data.map(content => ({
                 ...content,
             }));
@@ -70,6 +64,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [handleScroll]);
+
 
     const handleGenreChange = (genre) => {
         if (selectedGenre === genre) {
@@ -118,7 +113,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         if (!isDown.current) return;
         e.preventDefault();
         const x = e.pageX - subgenreRef.current.offsetLeft;
-        const walk = (x - startX.current); // Scroll speed
+        const walk = (x - startX.current) ; // Scroll speed
         subgenreRef.current.scrollLeft = scrollLeft.current - walk;
     };
 
