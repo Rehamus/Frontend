@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import Plot from 'react-plotly.js';
 import styles from './AdminMainPage.module.css';
 import axiosInstance from '../../api/axiosInstance';
 import NewNoticePage from "../AdminNewNoticePage/NewNoticePage";
 import PostList from "../../tool/PostList/PostList";
 
-const AdminMainPage = ({ onAdminLogin }) => {
+const AdminMainPage = () => {
     const navigate = useNavigate();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,30 +17,37 @@ const AdminMainPage = ({ onAdminLogin }) => {
     const [noticesSize] = useState(4);
     const [hashtagsSize] = useState(100);
     const [loading, setLoading] = useState(true);
+    const [sortAscending, setSortAscending] = useState(true);
     const boardId = 0;
 
     const fetchNotices = useCallback(async () => {
         try {
             const response = await axiosInstance.get(`/api/admin/post/notice/page`, {
-                params: { page: noticesPage, size: noticesSize },
-                headers: { Authorization: localStorage.getItem('Authorization') }
+                params: {
+                    page: noticesPage,
+                    size: noticesSize,
+                    asc: sortAscending
+                },
+                headers: {Authorization: localStorage.getItem('Authorization')}
             });
 
-            const { totalPages, responseDtoList } = response.data;
+            const {totalPages, responseDtoList} = response.data;
             setNotices(responseDtoList || []);
             setNoticesTotalPages(totalPages);
         } catch (error) {
             console.error('공지사항 조회 중 오류 발생:', error);
             setNotices([]);
         }
-    }, [noticesPage, noticesSize]);
+    }, [noticesPage, noticesSize, sortAscending]);
 
     const fetchHashtags = useCallback(async () => {
         try {
             const response = await axiosInstance.get('/api/admin/hashtag/page', {
-                params: { page: 0, size: hashtagsSize },
-                headers: { Authorization: `${localStorage.getItem('Authorization')}` }
+                params: {page: 0, size: hashtagsSize, sortBy: 'id',asc:false},
+                headers: {Authorization: `${localStorage.getItem('Authorization')}`}
             });
+            console.log(response.data);
+
 
             const data = response.data;
             let hashtagsData = [];
@@ -66,19 +73,19 @@ const AdminMainPage = ({ onAdminLogin }) => {
         const tags = [];
         const counts = [];
 
-        hashtags.forEach(({ tier, tag, count }) => {
+        hashtags.forEach(({tier, tag, count}) => {
             tiers.push(tier);
             tags.push(tag);
             counts.push(count);
         });
 
-        return { tiers, tags, counts };
+        return {tiers, tags, counts};
     };
 
     const handleCrawlingAction = async (endpoint) => {
         try {
             await axiosInstance.post(`/api/content${endpoint}`,
-                {}, { headers: { Authorization: `${localStorage.getItem('Authorization')}` } }
+                {}, {headers: {Authorization: `${localStorage.getItem('Authorization')}`}}
             );
             alert('작업이 성공적으로 완료되었습니다.');
         } catch (error) {
@@ -182,7 +189,14 @@ const AdminMainPage = ({ onAdminLogin }) => {
                         </button>
                     </div>
                     <div>
-                        <h3>공지사항 목록</h3>
+                        <h3>
+                            <button
+                            onClick={() => setSortAscending(prev => !prev)}
+                            className={styles.sort_btn}
+                        >
+                            {sortAscending ? '공지사항 목록 ▲' : '공지사항 목록 ▼'}
+                        </button></h3>
+
                         <PostList
                             posts={notices}
                             boardId={boardId}

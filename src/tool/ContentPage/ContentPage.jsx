@@ -20,7 +20,18 @@ const ContentPage = ({ type, title, genres, tabs }) => {
     const startX = useRef(0);
     const scrollLeft = useRef(0);
 
-    const fetchContent = useCallback(async (offset, pageSize, genre, subGenre, tab) => {
+    useEffect(() => {
+        if (offset === 0) {
+            setContents([]);
+            setHasMore(true);
+        }
+
+        fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageSize, selectedGenre, selectedSubGenre, selectedTab, offset]);
+
+
+    const fetchContent = async (offset, pageSize, genre, subGenre, tab) => {
         if (loading) return;
         setLoading(true);
         try {
@@ -28,6 +39,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                 params: { offset, pagesize: pageSize, genre: subGenre || '', tab }
             });
+            console.log(response.data)
             const content = response.data.map(content => ({
                 ...content,
             }));
@@ -38,20 +50,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         } finally {
             setLoading(false);
         }
-    }, [loading, type]);
-
-    useEffect(() => {
-        setContents([]);
-        setOffset(0);
-        setHasMore(true);
-        fetchContent(0, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-    }, [fetchContent, pageSize, selectedGenre, selectedSubGenre, selectedTab]);
-
-    useEffect(() => {
-        if (offset !== 0) {
-            fetchContent(offset, pageSize, selectedGenre, selectedSubGenre, selectedTab);
-        }
-    }, [offset, fetchContent, pageSize, selectedGenre, selectedSubGenre, selectedTab]);
+    };
 
     const handleScroll = useCallback(() => {
         if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1 && hasMore && !loading) {
@@ -65,6 +64,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [handleScroll]);
+
 
     const handleGenreChange = (genre) => {
         if (selectedGenre === genre) {
@@ -113,7 +113,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         if (!isDown.current) return;
         e.preventDefault();
         const x = e.pageX - subgenreRef.current.offsetLeft;
-        const walk = (x - startX.current); // Scroll speed
+        const walk = (x - startX.current) ; // Scroll speed
         subgenreRef.current.scrollLeft = scrollLeft.current - walk;
     };
 
@@ -131,7 +131,7 @@ const ContentPage = ({ type, title, genres, tabs }) => {
                         </button>
                         {selectedGenre === genre.name && genre.subGenres.length > 0 && (
                             <div
-                                style={{ transform: `translateX(-${leftPosition - 10}px)` }}
+                                style={{ transform: `translateX( -${leftPosition - 10}px)`}}
                                 className="subgenre-filter"
                                 ref={subgenreRef}
                                 onMouseDown={handleMouseDown}

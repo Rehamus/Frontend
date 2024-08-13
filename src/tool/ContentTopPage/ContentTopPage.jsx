@@ -7,18 +7,17 @@ import 'swiper/css/navigation';
 import styles from './ContentTopPage.module.css';
 import { Navigation } from 'swiper/modules';
 
-const ContentTopPage = ({ type, title, genres, tabs }) => {
+const ContentTopPage = ({ type, title }) => {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // useCallback을 사용하여 fetchContent를 메모이제이션
-    const fetchContent = useCallback(async (genre, subGenre, tab) => {
+    const fetchContent = useCallback(async () => {
         if (loading) return;
         setLoading(true);
         try {
             const response = await axiosInstance.get(`/api/contents${type}/top`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                params: { pagesize: 10, genre: '', tab }
+                params: { pagesize: 10, genre: '', tab: '' }
             });
             const content = response.data.map((content, index) => ({
                 ...content,
@@ -33,9 +32,42 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
     }, [loading, type]);
 
     useEffect(() => {
-        setContents([]);
-        fetchContent();
-    }, [fetchContent]);
+        if (contents.length === 0) { // 필요 없는 상태 업데이트를 방지
+            fetchContent();
+        }
+    }, [fetchContent, contents.length]);
+
+    useEffect(() => {
+        const swiperContainer = document.querySelector('.swiper-container');
+        if (swiperContainer) {
+            const swiperInstance = new Swiper(swiperContainer, {
+                modules: [Navigation],
+                spaceBetween: 10,
+                slidesPerView: 4.2,
+                navigation: true,
+                loop: true,
+                breakpoints: {
+                    1024: {
+                        slidesPerView: 4.2,
+                    },
+                    600: {
+                        slidesPerView: 2.2,
+                    },
+                    320: {
+                        slidesPerView: 1.2,
+                    },
+                },
+            });
+
+            const totalSlides = swiperInstance.slides.length;
+            const slidesPerView = swiperInstance.params.slidesPerView;
+
+            if (totalSlides <= slidesPerView) {
+                swiperInstance.params.loop = false;
+                swiperInstance.update();
+            }
+        }
+    }, [contents]);
 
     return (
         <div className={styles.topContentContainer}>
@@ -81,6 +113,6 @@ const ContentTopPage = ({ type, title, genres, tabs }) => {
             {loading && <p>더 많은 컨텐츠를 불러오는 중...</p>}
         </div>
     );
-}
+};
 
 export default ContentTopPage;

@@ -143,7 +143,7 @@ const App = () => {
 
                 <Route path="/signup" element={<SignupPage/>}/>
                 <Route path="/login" element={<LoginPage/>}/>
-                <Route path="/login/failure" element={<LoginFailurePage/>}/> {/* 추가 */}
+                <Route path="/login/failure" element={<LoginFailurePage/>}/>
                 <Route path="/auth/callback" element={<AuthCallback onLogin={handleLogin}/>}/>
 
                 <Route path="/user/:userId" element={<UserPage/>}/>
