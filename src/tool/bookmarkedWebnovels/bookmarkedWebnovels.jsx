@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import ContentPage from '../../../tool/ContentPage/ContentPage';
+import ContentPage from '../ContentPage/ContentPage';
 
 const BookmarkedWebnovels = () => {
     const [genres, setGenres] = useState([]);

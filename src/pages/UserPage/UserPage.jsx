@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Modal from 'react-modal';
 import styles from './MyPage.module.css';
 import axiosInstance from '../../api/axiosInstance';
@@ -24,7 +24,6 @@ const UserPage = ({ setIsLoggedIn }) => {
     const pageSize = 4;
     const offset = (currentPage - 1) * pageSize;
 
-    // fetchData를 useCallback으로 감싸 메모이제이션
     const fetchData = useCallback(async () => {
         try {
             const profileResponse = await axiosInstance.get('/api/user', {

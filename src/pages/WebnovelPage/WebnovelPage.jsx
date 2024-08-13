@@ -11,7 +11,7 @@ const WebnovelPage = () => {
 
         const generatedGenres = [
             {name: '전체', subGenres: []},
-            {name: '콘텐츠 형식', subGenres: ['웹소설', '연재중', '연재완결', '19금']},
+            {name: '콘텐츠 형식', subGenres: ['웹소설', '연재중', '연재완결']},
             {name: '평점 및 리뷰', subGenres: ['평점4점이상', '리뷰500개이상', '별점500개이상', '리뷰100개이상', '별점100개이상']},
             {name: '설정 및 테그', subGenres: genresArray}
         ];

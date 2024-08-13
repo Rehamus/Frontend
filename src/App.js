@@ -11,8 +11,8 @@ import HomePage from './pages/HomePage/HomePage';
 
 import UserPage from "./pages/UserPage/UserPage";
 import MyPage from './pages/MyPage/MyPage';
-import BookmarkedWebtoons from "./pages/MyPage/bookmarkedWebtoons/bookmarkedWebtoons";
-import BookmarkedWebnovels from "./pages/MyPage/bookmarkedWebnovels/bookmarkedWebnovels";
+import BookmarkedWebtoons from "./tool/bookmarkedWebtoons/bookmarkedWebtoons";
+import BookmarkedWebnovels from "./tool/bookmarkedWebnovels/bookmarkedWebnovels";
 
 import LoginPage from './pages/LoginPage/LoginPage';
 import LoginFailurePage from './pages/LoginPage/LoginFailurePage'; // 추가
@@ -85,7 +85,9 @@ const App = () => {
 
     const fetchTopHashtags = async () => {
         try {
-            const response = await axiosInstance.get('/api/hashtag/top10');
+            const response = await axiosInstance.get('/api/hashtag/all');
+            console.log(response.data)
+
             return response.data;
         } catch (error) {
             console.error("상위 10개 해시태그를 불러오는 중 오류가 발생했습니다!", error);

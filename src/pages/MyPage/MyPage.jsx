@@ -1,16 +1,15 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import Plot from 'react-plotly.js';
 import styles from './MyPage.module.css';
 import axiosInstance from '../../api/axiosInstance';
-import CardGrid from './CardGrid';
 import ProfileHeader from './ProfileHeader';
 import PostList from '../../tool/PostList/PostList';
 import EditProfileModal from './EditProfileModal';
+import Card from "../../tool/Card/Card";
 
 Modal.setAppElement('#root');
 
-const MyPage = ({ setIsLoggedIn , onLogout }) => {
+const MyPage = ({ setIsLoggedIn, onLogout }) => {
     const [profile, setProfile] = useState(null);
     const [bookmarkedWebtoons, setBookmarkedWebtoons] = useState([]);
     const [bookmarkedWebnovels, setBookmarkedWebnovels] = useState([]);
@@ -20,12 +19,11 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [hashtags, setHashtags] = useState([]);  // 해시태그 상태 추가
+    // const [hashtags, setHashtags] = useState([]);
 
     const pageSize = 4;
     const offset = (currentPage - 1) * pageSize;
 
-    // fetchData를 useCallback으로 감싸 메모이제이션
     const fetchData = useCallback(async () => {
         try {
             const profileResponse = await axiosInstance.get('/api/user', {
@@ -39,6 +37,7 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { offset, pageSize }
                     });
+                    // console.log(response)
                     return response.data;
                 } catch (error) {
                     console.error("웹툰 데이터를 불러오는 중 오류가 발생했습니다!", error);
@@ -52,6 +51,8 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { offset, pageSize }
                     });
+                    // console.log(response)
+
                     return response.data;
                 } catch (error) {
                     console.error("웹소설 데이터를 불러오는 중 오류가 발생했습니다!", error);
@@ -59,22 +60,24 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                 }
             };
 
-            const fetchUserHashtags = async () => {
+    /*        const fetchUserHashtags = async () => {
                 try {
                     const response = await axiosInstance.get('/api/user/hashtags', {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { limit: 10 }
                     });
+                    console.log(response)
+
                     return response.data;
                 } catch (error) {
                     console.error("해시태그 데이터를 불러오는 중 오류가 발생했습니다!", error);
                     return [];
                 }
-            };
+            };*/
 
             const webtoonsData = await fetchWebtoonsData();
             const webnovelsData = await fetchWebnovelsData();
-            const hashtagsData = await fetchUserHashtags();  // 해시태그 데이터 가져오기
+            // const hashtagsData = await fetchUserHashtags();  // 해시태그 데이터 가져오기
 
             const postsResponse = await axiosInstance.get(`/api/boards/user/posts`, {
                 params: { offset, pageSize },
@@ -85,13 +88,13 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
             setBookmarkedWebtoons(Array.isArray(webtoonsData) ? webtoonsData : []);
             setBookmarkedWebnovels(Array.isArray(webnovelsData) ? webnovelsData : []);
             setTotalPages(postsResponse.data.totalPages);
-            setHashtags(hashtagsData);  // 해시태그 상태 설정
+            // setHashtags(hashtagsData);  // 해시태그 상태 설정
         } catch (error) {
             console.error('데이터 불러오기 실패:', error);
             setBookmarkedWebtoons([]);
             setBookmarkedWebnovels([]);
             setRecentPosts([]);
-            setHashtags([]);  // 오류 발생 시 해시태그 상태 초기화
+            // setHashtags([]);  // 오류 발생 시 해시태그 상태 초기화
         }
     }, [offset, pageSize]); // useCallback 의존성 배열에 필요한 값들 추가
 
@@ -137,22 +140,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
         setCurrentPage(page);
     };
 
-    const create3DMapData = (hashtags) => {
-        const tiers = [];
-        const tags = [];
-        const counts = [];
-
-        hashtags.forEach(({ tier, tag, count }) => {
-            tiers.push(tier);
-            tags.push(tag);
-            counts.push(count);
-        });
-
-        return { tiers, tags, counts };
-    };
-
-    const map3DData = create3DMapData(hashtags);
-
     if (!profile) {
         return <div>로딩 중...</div>;
     }
@@ -169,14 +156,40 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                 <h2 className={styles.sectionTitle}>
                     북마크한 웹툰 <a href="/bookmarkedWebtoons" className={styles.more_btu}>더보기</a>
                 </h2>
-                <CardGrid items={bookmarkedWebtoons} />
+                <div className={styles.cardGrid}>
+                    {bookmarkedWebtoons.map((item) => (
+                        <Card
+                            key={item.id}
+                            img={item.imgUrl}
+                            title={item.title}
+                            platform={item.platform}
+                            author={item.author}
+                            description={item.description}
+                            genre={item.genre}
+                            rating={item.rating}
+                        />
+                    ))}
+                </div>
             </div>
 
             <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>
                     북마크한 웹소설 <a href="/bookmarkedWebnovels" className={styles.more_btu}>더보기</a>
                 </h2>
-                <CardGrid items={bookmarkedWebnovels} />
+                <div className={styles.cardGrid}>
+                    {bookmarkedWebnovels.map((item) => (
+                        <Card
+                            key={item.id}
+                            img={item.imgUrl}
+                            title={item.title}
+                            platform={item.platform}
+                            author={item.author}
+                            description={item.description}
+                            genre={item.genre}
+                            rating={item.rating}
+                        />
+                    ))}
+                </div>
             </div>
 
             <div className={styles.section}>
@@ -186,41 +199,6 @@ const MyPage = ({ setIsLoggedIn , onLogout }) => {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageClick={handlePageClick}
-                />
-            </div>
-
-            {/* 3D Hashtag Map 추가 */}
-            <div className={styles.section}>
-                <h2>해시태그 3D 맵</h2>
-                <Plot
-                    data={[
-                        {
-                            x: map3DData.tiers,
-                            y: map3DData.tags,
-                            z: map3DData.counts,
-                            mode: 'markers',
-                            marker: {
-                                size: map3DData.counts,
-                                color: map3DData.counts,
-                                colorscale: 'Viridis',
-                                opacity: 0.8,
-                            },
-                            type: 'scatter3d',
-                            hoverinfo: 'none',  // 호버 텍스트 제거
-                        },
-                    ]}
-                    layout={{
-                        width: 700,
-                        height: 500,
-                        margin: {
-                            l: 0,
-                            r: 0,
-                            t: 0,
-                            b: 0,
-                        },
-                        title: '',  // 제목 제거
-                    }}
-                    config={{ displayModeBar: false, scrollZoom: false }}  // 모드바 숨기기 및 마우스 휠 확대/축소 비활성화
                 />
             </div>
 

@@ -30,7 +30,6 @@ const AdminMainPage = () => {
                 },
                 headers: {Authorization: localStorage.getItem('Authorization')}
             });
-
             const {totalPages, responseDtoList} = response.data;
             setNotices(responseDtoList || []);
             setNoticesTotalPages(totalPages);
@@ -46,9 +45,6 @@ const AdminMainPage = () => {
                 params: {page: 0, size: hashtagsSize, sortBy: 'id',asc:false},
                 headers: {Authorization: `${localStorage.getItem('Authorization')}`}
             });
-            console.log(response.data);
-
-
             const data = response.data;
             let hashtagsData = [];
 

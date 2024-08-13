@@ -22,12 +22,12 @@ const ContentDetailPage = ({ isLoggedIn }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [currentUserId, setCurrentUserId] = useState(null);
-    const itemsPerPage = 4; // 페이지당 아이템 수
+    const itemsPerPage = 4;
 
     useEffect(() => {
         const fetchContentDetail = async () => {
             try {
-                const response = await axiosInstance.get(`/api/contents/${cardId}`,{
+                const response = await axiosInstance.get(`/api/contents/${cardId}`, {
                     headers: { Authorization: `${localStorage.getItem('Authorization')}` }
                 });
                 setContent(response.data);
@@ -108,6 +108,12 @@ const ContentDetailPage = ({ isLoggedIn }) => {
         setPage(pageNumber);
     };
 
+    const handleTagClick = (tag) => {
+        localStorage.setItem('selectedTag', tag);  // 선택된 태그를 로컬 스토리지에 저장
+        console.log(tag)
+        navigate('/');  // '/' 경로로 리다이렉트
+    };
+
     if (!content) {
         return <div>Loading...</div>;
     }
@@ -150,14 +156,26 @@ const ContentDetailPage = ({ isLoggedIn }) => {
                         {content.contentHashTag && (
                             <div className={styles.tag_container}>
                                 {content.contentHashTag.split('#').filter(tag => tag.trim() !== '').map((tag, index) => (
-                                    <button key={index} className={styles.tag_button}>{tag}</button>
+                                    <button
+                                        key={index}
+                                        className={styles.tag_button}
+                                        onClick={() => handleTagClick(tag)}  // 태그 클릭 시 처리
+                                    >
+                                        {tag}
+                                    </button>
                                 ))}
                             </div>
                         )}
                         <p className={styles.postDetailMeta}>작가: {content.author} | {content.date}</p>
                         <div className={styles.tag_container}>
                             {content.hashtags && content.hashtags.map(tag => (
-                                <button key={tag} className={styles.tag_button}>{tag}</button>
+                                <button
+                                    key={tag}
+                                    className={styles.tag_button}
+                                    onClick={() => handleTagClick(tag)}  // 태그 클릭 시 처리
+                                >
+                                    {tag}
+                                </button>
                             ))}
                         </div>
                         <div className={styles.postDetailContent}>
