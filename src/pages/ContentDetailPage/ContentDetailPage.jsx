@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import CommentSection from '../../tool/CommentSection/CommentSection';
 import LikeBookmarkButtons from './LikeBookmarkButtons/LikeBookmarkButtons';
 import axiosInstance from '../../api/axiosInstance';
 import PostList from '../../tool/PostList/PostList';
 import styles from './ContentDetailPage.module.css';
+import Swiper from 'swiper';  // Swiper.js를 임포트
 
 const platformColors = {
     '리디': '#03beea',
@@ -79,6 +80,29 @@ const ContentDetailPage = ({ isLoggedIn }) => {
 
         fetchRelatedPosts();
     }, [page]);
+
+    useEffect(() => {
+        const swiperContainer = document.querySelector('.swiper-container');
+        if (swiperContainer) {
+            const swiperInstance = new Swiper(swiperContainer, {
+                slidesPerView: 3,
+                slidesPerGroup: 3,
+                loop: true,  // 기본적으로 루프 모드 활성화
+                // 그 외 설정
+            });
+
+            // 슬라이드 수와 설정된 값 비교
+            const totalSlides = swiperInstance.slides.length;
+            const slidesPerView = swiperInstance.params.slidesPerView;
+            const slidesPerGroup = swiperInstance.params.slidesPerGroup;
+
+            // 슬라이드가 부족할 경우 루프 모드 비활성화
+            if (totalSlides < slidesPerView || totalSlides < slidesPerGroup) {
+                swiperInstance.params.loop = false;  // 루프 모드 비활성화
+                swiperInstance.update();  // 설정 업데이트
+            }
+        }
+    }, []);
 
     const handlePageClick = (pageNumber) => {
         setPage(pageNumber);

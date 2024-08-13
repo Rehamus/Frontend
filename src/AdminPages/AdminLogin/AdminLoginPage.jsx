@@ -28,7 +28,7 @@ const AdminLoginPage = ({onAdminLogin}) => {
 
             navigate('/admin/main');
         } catch (error) {
-            alert('Invalid username or password');
+            alert('아이디 또는 비밀번호가 정확하지 않습니다. 다시 한 번 확인해 주시기 바랍니다.');
         }
     };
 
@@ -49,7 +49,7 @@ const AdminLoginPage = ({onAdminLogin}) => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         className={styles['input-field']}
-                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyPress}
                     />
                     <input
                         type="password"
@@ -57,7 +57,7 @@ const AdminLoginPage = ({onAdminLogin}) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className={styles['input-field']}
-                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyPress}
                     />
                     <button onClick={handleLogin} className={styles['login-btn']}>로그인</button>
                 </div>
