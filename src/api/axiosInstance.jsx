@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080', // 배포 시 'https://www.elevenbookshelf.com'으로 변경
+    baseURL: process.env.CORS_BACKEND_URL,
     headers: {
         'Content-Type': 'application/json',
     },
