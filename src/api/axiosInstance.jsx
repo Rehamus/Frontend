@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: process.env.CORS_BACKEND_URL,
+    baseURL: process.env.REACT_APP_CORS_BACKEND_URL,
     headers: {
         'Content-Type': 'application/json',
     },
