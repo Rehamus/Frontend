@@ -20,7 +20,7 @@ const TagSearch = () => {
                     axiosInstance.get('/api/contents/search', {
                         params: { keyword: searchTerm, offset: 0, pagesize: 20 }
                     }),
-                    axiosInstance.get('/api/post', {
+                    axiosInstance.get('/api/post/keyword', {
                         params: { keyword: searchTerm, offset: 0, pagesize: 20 }
                     })
                 ]);

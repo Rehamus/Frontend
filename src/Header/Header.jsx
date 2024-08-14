@@ -11,7 +11,7 @@ const Header = () => {
 
     return (
         <header className="header">
-            <a href="/" className="logo">11조 프로젝트</a>
+            <a href="/" className="logo">ElevenBookshelf</a>
             <nav className="nav">
                 <a href="/webtoon" className="nav-link">웹툰</a>
                 <a href="/webnovel" className="nav-link">웹소설</a>

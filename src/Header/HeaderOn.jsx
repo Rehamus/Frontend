@@ -25,7 +25,7 @@ const HeaderOn = ({ onLogout }) => {
 
     return (
         <header className="header">
-            <a href="/" className="logo">11조 프로젝트</a>
+            <a href="/" className="logo">ElevenBookshelf</a>
             <nav className="nav">
                 <a href="/recommend" className="nav-link">추천</a>
                 <a href="/webtoon" className="nav-link">웹툰</a>
