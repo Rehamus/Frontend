@@ -135,7 +135,7 @@ const PostDetailPage = ({isLoggedIn}) => {
         const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
         try {
             await axiosInstance.delete(`/api/post/${postId}`, { headers });
-            navigate(location.state?.from || -1); // 이전 페이지로 이동
+            navigate(-1);
         } catch (error) {
             console.error("There was an error deleting the post!", error);
         }

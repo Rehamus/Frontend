@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import './CommentSection.css';
 import { Link } from "react-router-dom";
@@ -15,7 +15,6 @@ const CommentSection = ({ postId, isLoggedIn, currentUserId }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(3); // 댓글 페이지당 개수
 
-    // useCallback으로 fetchComments 함수를 메모이제이션
     const fetchComments = useCallback(async (page = currentPage - 1) => {
         if (page < 0) page = 0;
 
