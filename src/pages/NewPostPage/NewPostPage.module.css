@@ -1,33 +1,33 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+}
 
 .container {
-    max-width: 800px;
+    max-width: 1400px;
     margin: 2rem auto;
     padding: 2rem;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 2rem; /* 좌우 열 간격 추가 */
 }
-.form-group {
-    margin-bottom: 1.5rem;
+
+.leftColumn {
+    flex: 1;
+    max-width: 300px; /* 왼쪽 열의 최대 너비 */
 }
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
+
+.rightColumn {
+    flex: 2;
+    min-height: 250px;
 }
-input[type="text"],
-textarea,
-select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-textarea {
-    min-height: 200px;
-    resize: vertical;
-}
+
 .button {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -40,15 +40,43 @@ textarea {
     border: none;
     cursor: pointer;
 }
+
 .button:hover {
     background-color: #3b78e7;
 }
+
 .button-secondary {
     background-color: #f1f3f4;
     color: #333;
 }
+
 .button-secondary:hover {
     background-color: #e8eaed;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+textarea {
+    min-height: 200px;
+    resize: vertical;
 }
 
 .selected-tag-container {
@@ -94,4 +122,83 @@ textarea {
     background-color: #007BFF;
     color: white;
     border: 1px solid #0056b3;
+}
+
+/* ContentDetailPage-specific styles */
+
+.content_img {
+    border-radius: 1.2rem;
+    width: 100%;
+    height: 400px;
+    max-width: 300px;
+    object-fit: cover;
+    position: relative;
+    margin-bottom: 1.2rem;
+    background-position: center;
+    background-size: cover;
+}
+
+.post_platform {
+    border-radius: 1.2rem;
+    background-color: #007bff;
+    position: absolute;
+    color: white;
+    font-weight: bolder;
+    width: 100%;
+    text-align: center;
+    bottom: -1rem;
+    box-shadow: 0 0.2rem 5px rgba(0, 0, 0, 0.5);
+}
+
+.bookInfo {
+    margin-top: 1rem;
+}
+
+.bookInfo h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.bookInfo p {
+    margin: 0.5rem 0;
+}
+
+.detail_button {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background-color: #4285f4;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.detail_button:hover {
+    background-color: #0f3d89;
+    color: #ffefef;
+}
+
+.tag_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag_button {
+    padding: 0.08rem 0.4rem;
+    background-color: #f0f2f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tag_button:hover {
+    background-color: #e8eaed;
 }

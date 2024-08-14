@@ -6,6 +6,7 @@ import ProfileHeader from './ProfileHeader';
 import PostList from '../../tool/PostList/PostList';
 import EditProfileModal from './EditProfileModal';
 import Card from "../../tool/Card/Card";
+import { useNavigate } from 'react-router-dom';
 
 Modal.setAppElement('#root');
 
@@ -19,11 +20,14 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    // const [hashtags, setHashtags] = useState([]);
+    const [hashtags, setHashtags] = useState([]);
+
+    const navigate = useNavigate();
 
     const pageSize = 4;
     const offset = (currentPage - 1) * pageSize;
 
+    // fetchData를 useCallback으로 감싸서 메모이제이션합니다.
     const fetchData = useCallback(async () => {
         try {
             const profileResponse = await axiosInstance.get('/api/user', {
@@ -37,7 +41,6 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { offset, pageSize }
                     });
-                    // console.log(response)
                     return response.data;
                 } catch (error) {
                     console.error("웹툰 데이터를 불러오는 중 오류가 발생했습니다!", error);
@@ -51,8 +54,6 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { offset, pageSize }
                     });
-                    // console.log(response)
-
                     return response.data;
                 } catch (error) {
                     console.error("웹소설 데이터를 불러오는 중 오류가 발생했습니다!", error);
@@ -60,26 +61,24 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
                 }
             };
 
-    /*        const fetchUserHashtags = async () => {
+            const fetchUserHashtags = async () => {
                 try {
                     const response = await axiosInstance.get('/api/user/hashtags', {
                         headers: { Authorization: `${localStorage.getItem('Authorization')}` },
                         params: { limit: 10 }
                     });
-                    console.log(response)
-
                     return response.data;
                 } catch (error) {
                     console.error("해시태그 데이터를 불러오는 중 오류가 발생했습니다!", error);
                     return [];
                 }
-            };*/
+            };
 
             const webtoonsData = await fetchWebtoonsData();
             const webnovelsData = await fetchWebnovelsData();
-            // const hashtagsData = await fetchUserHashtags();  // 해시태그 데이터 가져오기
+            const hashtagsData = await fetchUserHashtags();  // 해시태그 데이터 가져오기
 
-            const postsResponse = await axiosInstance.get(`/api/boards/user/posts`, {
+            const postsResponse = await axiosInstance.get(`/api/user/posts`, {
                 params: { offset, pageSize },
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` }
             });
@@ -88,19 +87,18 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
             setBookmarkedWebtoons(Array.isArray(webtoonsData) ? webtoonsData : []);
             setBookmarkedWebnovels(Array.isArray(webnovelsData) ? webnovelsData : []);
             setTotalPages(postsResponse.data.totalPages);
-            // setHashtags(hashtagsData);  // 해시태그 상태 설정
+            setHashtags(hashtagsData);  // 해시태그 상태 설정
         } catch (error) {
             console.error('데이터 불러오기 실패:', error);
             setBookmarkedWebtoons([]);
             setBookmarkedWebnovels([]);
             setRecentPosts([]);
-            // setHashtags([]);  // 오류 발생 시 해시태그 상태 초기화
         }
-    }, [offset, pageSize]); // useCallback 의존성 배열에 필요한 값들 추가
+    }, [offset, pageSize]); // useCallback에 필요한 의존성만 추가합니다.
 
     useEffect(() => {
         fetchData();
-    }, [currentPage, fetchData]); // fetchData를 의존성 배열에 추가
+    }, [currentPage, fetchData]); // 의존성 배열에서 fetchData를 안전하게 사용
 
     const handleEditProfile = async () => {
         if (window.confirm('정말로 수정하시겠습니까?')) {
@@ -140,6 +138,11 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
         setCurrentPage(page);
     };
 
+    // 카드 클릭 시 해당 카드의 ID를 사용하여 페이지로 이동
+    const handleCardClick = (id) => {
+        navigate(`/content/${id}`);
+    };
+
     if (!profile) {
         return <div>로딩 중...</div>;
     }
@@ -158,16 +161,17 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
                 </h2>
                 <div className={styles.cardGrid}>
                     {bookmarkedWebtoons.map((item) => (
-                        <Card
-                            key={item.id}
-                            img={item.imgUrl}
-                            title={item.title}
-                            platform={item.platform}
-                            author={item.author}
-                            description={item.description}
-                            genre={item.genre}
-                            rating={item.rating}
-                        />
+                        <div onClick={() => handleCardClick(item.id)} key={item.id}>
+                            <Card
+                                img={item.imgUrl}
+                                title={item.title}
+                                platform={item.platform}
+                                author={item.author}
+                                description={item.description}
+                                genre={item.genre}
+                                rating={item.rating}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>
@@ -178,16 +182,17 @@ const MyPage = ({ setIsLoggedIn, onLogout }) => {
                 </h2>
                 <div className={styles.cardGrid}>
                     {bookmarkedWebnovels.map((item) => (
-                        <Card
-                            key={item.id}
-                            img={item.imgUrl}
-                            title={item.title}
-                            platform={item.platform}
-                            author={item.author}
-                            description={item.description}
-                            genre={item.genre}
-                            rating={item.rating}
-                        />
+                        <div onClick={() => handleCardClick(item.id)} key={item.id}>
+                            <Card
+                                img={item.imgUrl}
+                                title={item.title}
+                                platform={item.platform}
+                                author={item.author}
+                                description={item.description}
+                                genre={item.genre}
+                                rating={item.rating}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>

@@ -35,11 +35,14 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         if (loading) return;
         setLoading(true);
         try {
+            // 로컬 스토리지에서 selectedTag 값을 가져옴
+            const selectedTag = localStorage.getItem('selectedTag');
+            const genre = selectedTag || subGenre; // selectedTag가 있으면 genre로 사용
+
             const response = await axiosInstance.get(`/api/contents${type}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
-                params: { offset, pagesize: pageSize, genre: subGenre || '', platform: tab || '' }
+                params: { offset, pagesize: pageSize, genre: genre || '', platform: tab || '' }
             });
-
             const content = response.data.map(content => ({
                 ...content,
             }));
@@ -64,6 +67,14 @@ const ContentPage = ({ type, title, genres, tabs }) => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [handleScroll]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            localStorage.removeItem('selectedTag');
+        }, 1000); // 1초 뒤에 selectedTag 값을 삭제
+
+        return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+    }, []);
 
     const handleGenreChange = (genre) => {
         if (genre === '전체') {

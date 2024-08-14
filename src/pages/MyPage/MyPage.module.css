@@ -166,3 +166,19 @@ body {
     font-size: 1rem;
     width: 100%;
 }
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 한 행에 4개의 카드가 나오도록 설정 */
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.cardGrid .card {
+    width: 100%; /* grid-template-columns에 따라 크기가 조정됨 */
+    height: 300px; /* 카드 높이를 300px로 고정 */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

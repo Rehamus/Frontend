@@ -22,7 +22,7 @@ const HomePage = () => {
     return (
         <div className="content-page">
             <ContentPage
-                type=""
+                type="/genre"
                 title="인기 웹툰 웹소설"
                 genres={genres}
                 tabs={['리디', '카카오페이지', '문피아']}
