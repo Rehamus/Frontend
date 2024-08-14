@@ -182,9 +182,9 @@ const ContentDetailPage = ({ isLoggedIn }) => {
                             <p>{content.description}</p>
                         </div>
                     </div>
-                    <div className="commentSection">
+{/*                    <div className="commentSection">
                         <CommentSection postId={cardId} isLoggedIn={isLoggedIn} currentUserId={currentUserId} />
-                    </div>
+                    </div>*/}
                 </div>
             </div>
 
