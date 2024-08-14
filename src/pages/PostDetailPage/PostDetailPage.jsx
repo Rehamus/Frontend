@@ -132,10 +132,10 @@ const PostDetailPage = ({isLoggedIn}) => {
     };
 
     const handleDelete = async () => {
-        const headers = {Authorization: `${localStorage.getItem('Authorization')}`};
+        const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
         try {
-            await axiosInstance.delete(`/api/post/${postId}`, {headers});
-            navigate(`/community/board/${boardId}`);
+            await axiosInstance.delete(`/api/post/${postId}`, { headers });
+            navigate(location.state?.from || -1); // 이전 페이지로 이동
         } catch (error) {
             console.error("There was an error deleting the post!", error);
         }
@@ -162,6 +162,12 @@ const PostDetailPage = ({isLoggedIn}) => {
         } catch (error) {
             console.error("There was an error saving the post!", error);
         }
+    };
+
+    const handleTagClick = (tag) => {
+        localStorage.setItem('selectedTag', tag);  // 선택된 태그를 로컬 스토리지에 저장
+        console.log(tag)
+        navigate('/');  // '/' 경로로 리다이렉트
     };
 
     const handlePageClick = (pageNumber) => {
@@ -215,7 +221,8 @@ const PostDetailPage = ({isLoggedIn}) => {
                             {content.contentHashTag && (
                                 <div className={styles.tag_container}>
                                     {content.contentHashTag.split('#').filter(tag => tag.trim() !== '').map((tag, index) => (
-                                        <button key={index} className={styles.tag_button}>{tag}</button>
+                                        <button onClick={() => handleTagClick(tag)}
+                                         key={index} className={styles.tag_button} >{tag}</button>
                                     ))}
                                 </div>
                             )}

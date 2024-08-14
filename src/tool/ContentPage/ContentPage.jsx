@@ -35,9 +35,8 @@ const ContentPage = ({ type, title, genres, tabs }) => {
         if (loading) return;
         setLoading(true);
         try {
-            // 로컬 스토리지에서 selectedTag 값을 가져옴
             const selectedTag = localStorage.getItem('selectedTag');
-            const genre = selectedTag || subGenre; // selectedTag가 있으면 genre로 사용
+            const genre = selectedTag || subGenre;
 
             const response = await axiosInstance.get(`/api/contents${type}`, {
                 headers: { Authorization: `${localStorage.getItem('Authorization')}` },
