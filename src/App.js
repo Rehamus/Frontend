@@ -38,6 +38,7 @@ import AdminPostManagementPage from "./AdminPages/AdminPostController/AdminPostM
 import AdminHashtagManagementPage from "./AdminPages/AdminHashtag/AdminHashtagManagementPage";
 import AdminRoute from "./api/AdminRoute";
 import AdminContentManagementPage from "./AdminPages/AdminContentsController/AdminContentManagementPage";
+import RecommendPage from "./pages/RecommendPage/RecommendPage";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -141,6 +142,7 @@ const App = () => {
                 <Route path="/*" element={<NotFoundPage/>}/>
                 <Route path="/webtoon" element={<WebtoonPage/>}/>
                 <Route path="/webnovel" element={<WebnovelPage/>}/>
+                <Route path="/recommend" element={<RecommendPage/>}/>
                 <Route path="/content/:cardId" element={<ContentDetailPage isLoggedIn={isLoggedIn}/>}/>
 
                 <Route path="/signup" element={<SignupPage/>}/>
