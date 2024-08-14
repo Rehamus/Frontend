@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
                     isRefreshing = true;
 
                     try {
-                        const response = await axios.post('http://localhost:8080/api/auth/refresh', null, {
+                        const response = await axios.post(`${process.env.REACT_APP_CORS_BACKEND_URL}/api/auth/refresh`, null, {
                             params: { token: refreshToken }
                         });
 
