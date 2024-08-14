@@ -135,7 +135,7 @@ const PostDetailPage = ({isLoggedIn}) => {
         const headers = { Authorization: `${localStorage.getItem('Authorization')}` };
         try {
             await axiosInstance.delete(`/api/post/${postId}`, { headers });
-            navigate(-1);
+            navigate('/');
         } catch (error) {
             console.error("There was an error deleting the post!", error);
         }
